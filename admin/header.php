@@ -1,3 +1,7 @@
+<?php
+	include('../db_conn.php');
+	include('function.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +20,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Page Title Here -->
-	<title>Akademi : School and Education Management System</title>
+	<title>Akademi - <?php echo getPageTitle(); ?></title>
 
 <!-- FAVICONS ICON -->
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png" >
@@ -32,7 +36,12 @@
 	<!-- Style css -->
 	<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-	
+
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert 2 library -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
 </head>
 <body>
 
@@ -106,7 +115,7 @@
                     <div class="collapse navbar-collapse justify-content-between">
                         <div class="header-left">
 						<div class="dashboard_bar">
-							Dashboard
+						<?php echo getPageTitle(); ?>
 						</div>
                         </div>
                         <ul class="navbar-nav header-right">
@@ -404,9 +413,15 @@
 							<li><a href="requisition-approval">Requisition Approval</a></li>
 						</ul>
 					</li>
+					<li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
+					<i class="material-symbols-outlined">person</i>
+
+						<span class="nav-text">User</span>
+					</a>
+					<ul aria-expanded="false">
+						<li><a href="user">User</a></li>
+					</ul>
+					</li>
 				</ul>
 			</div>
         </div>
-        <!--**********************************
-            Sidebar end
-        ***********************************-->
