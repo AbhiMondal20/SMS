@@ -50,24 +50,24 @@ include 'header.php';
                                 </thead>
                                 <tbody>
                                     <?php
-$sql = "SELECT * FROM user";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$result = $stmt->get_result();
+                                    $sql = "SELECT * FROM user";
+                                    $stmt = $conn->prepare($sql);
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
 
-$sno = 0;
-while ($row = $result->fetch_assoc()) {
-    $id = $row['id'];
-    $name = $row['name'];
-    $email = $row['email'];
-    $mobile = $row['mobile'];
-    $password = $row['password'];
-    $pass10 = substr($password, 0, 10);
-    $status = $row['status'];
-    $role = $row['role'];
+                                    $sno = 0;
+                                    while ($row = $result->fetch_assoc()) {
+                                        $id = $row['id'];
+                                        $name = $row['name'];
+                                        $email = $row['email'];
+                                        $mobile = $row['mobile'];
+                                        $password = $row['password'];
+                                        $pass10 = substr($password, 0, 10);
+                                        $status = $row['status'];
+                                        $role = $row['role'];
 
-    $sno += 1;
-    ?>
+                                        $sno += 1;
+                                        ?>
                                         <tr>
                                             <td>
                                                 <?php echo $sno; ?>
@@ -100,13 +100,15 @@ while ($row = $result->fetch_assoc()) {
                                             <td>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" role="switch" <?php if ($status == '1') {
-        echo "checked";
-    }?> id="flexSwitchCheckChecked" onclick="toggleStatus(<?php echo $id; ?>)">
+                                                        echo "checked";
+                                                    } ?> id="flexSwitchCheckChecked"
+                                                        onclick="toggleStatus(<?php echo $id; ?>)">
                                                 </div>
                                             </td>
 
                                             <td>
-                                                <button type="button" class="btn btn-sm light btn-secondary"><i
+                                                <button type="button" class="btn btn-sm light btn-secondary"
+                                                    data-bs-toggle="modal" data-bs-target="#ViewModal"><i
                                                         class="fa-solid fa-eye"></i>View</button>
                                                 <button type="button" class="btn btn-sm light btn-info"><i
                                                         class="fa-solid fa-pen-to-square"></i>Edit</button>
@@ -115,8 +117,8 @@ while ($row = $result->fetch_assoc()) {
                                             </td>
                                         </tr>
                                         <?php
-}
-?>
+                                    }
+                                    ?>
 
                                 </tbody>
                             </table>
@@ -133,7 +135,7 @@ while ($row = $result->fetch_assoc()) {
 </div>
 
 
-
+<!-- Add user Modal -->
 <div class="modal fade" id="CoursesModal" tabindex="-1" aria-labelledby="CoursesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
@@ -202,6 +204,47 @@ while ($row = $result->fetch_assoc()) {
         </div>
     </div>
 </div>
+
+
+
+<!-- View Modal -->
+<div class="modal fade" id="ViewModal" tabindex="-1" aria-labelledby="ViewModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ViewModal">View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card" id="card-title-1">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Name: <?php echo $name; ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    edits = document.getElementsByClassName('edit');
+    Array.from(edits).forEach((element) => {
+      element.addEventListener("click", (e) => {
+        console.log("edit ");
+        tr = e.target.parentNode.parentNode;
+        title = tr.getElementsByTagName("td")[0].innerText;
+        description = tr.getElementsByTagName("td")[1].innerText;
+        console.log(title, description);
+        titleEdit.value = title;
+        descriptionEdit.value = description;
+        snoEdit.value = e.target.id;
+        console.log(e.target.id)
+        $('#editModal').modal('toggle');
+      })
+    })
+</script>
 <?php
 if (isset($_POST['save'])) {
     $name = $_POST['name'];
@@ -233,7 +276,7 @@ if (isset($_POST['save'])) {
             $stmt->bind_param("sssssi", $name, $email, $pass, $mobile, $role, $status);
 
             if ($stmt->execute()) {
-                $success = true; 
+                $success = true;
             } else {
                 echo '<script>
                 swal("Error!", "Error inserting data.", "error");
@@ -261,41 +304,41 @@ if (isset($_POST['save'])) {
 
 <script>
     function toggleStatus(id) {
-    var id = id;
+        var id = id;
 
-    // Show a confirmation SweetAlert
-    swal({
-        title: "Are you sure?",
-        text: "Do you want to toggle the user's status?",
-        icon: "warning",
-        buttons: {
-            cancel: "Cancel", // Rename the Cancel button
-            confirm: "OK"     // Rename the OK button
-        },
-        dangerMode: true,
-    }).then((confirmed) => {
-        if (confirmed) {
-            // If the user confirms, make the AJAX request and set the status to "Active"
-            $.ajax({
-                url: "load/update_status.php",
-                type: "post",
-                data: { chatId: id },
-                success: function (result) {
-                    // if (result == '1') {
-                    //     swal("Success", "User is now Active", "success");
-                    // }else if (result == '0') {
-                    //     swal("Success", "User is now Inactive", "success");
-                    // }
-                    //  else {
-                    //     swal("Error", "Failed to update user status", "error");
-                    // }
-                }
-            });
-        } else {
-            // If the user cancels, do nothing (status remains unchanged)
-        }
-    });
-}
+        // Show a confirmation SweetAlert
+        swal({
+            title: "Are you sure?",
+            text: "Do you want to toggle the user's status?",
+            icon: "warning",
+            buttons: {
+                cancel: "Cancel", // Rename the Cancel button
+                confirm: "OK"     // Rename the OK button
+            },
+            dangerMode: true,
+        }).then((confirmed) => {
+            if (confirmed) {
+                // If the user confirms, make the AJAX request and set the status to "Active"
+                $.ajax({
+                    url: "load/update_status.php",
+                    type: "post",
+                    data: { chatId: id },
+                    success: function (result) {
+                        // if (result == '1') {
+                        //     swal("Success", "User is now Active", "success");
+                        // }else if (result == '0') {
+                        //     swal("Success", "User is now Inactive", "success");
+                        // }
+                        //  else {
+                        //     swal("Error", "Failed to update user status", "error");
+                        // }
+                    }
+                });
+            } else {
+                // If the user cancels, do nothing (status remains unchanged)
+            }
+        });
+    }
 
 </script>
 
