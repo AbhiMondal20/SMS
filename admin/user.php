@@ -205,57 +205,45 @@ include 'header.php';
 </div>
 
 
-<!-- View Modal -->
-<div class="modal fade" id="ViewModal" tabindex="-1" aria-labelledby="ViewModal" aria-hidden="true">
+<!-- Edit Modal -->
+<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ViewModal">View</h5>
+                <h5 class="modal-title" id="EditModal">Edit User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="" method="post">
                     <div class="row">
+                    <input type="hidden" name="idEdit" id="idEdit">
+
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput1" class="form-label mb-2">Name</label>
-                                <input type="text" class="form-control" required id="exampleFormControlInput1" 
-                                    placeholder="Name" name="name">
+                                <label for="editName" class="form-label mb-2">Name</label>
+                                <input type="text" class="form-control" required id="editName" 
+                                    placeholder="Name" name="editName">
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">email</label>
-                                <input type="email" class="form-control" id="exampleFormControlInput2"
-                                    placeholder="Email" required name="email">
+                                <label for="editEmail" class="form-label mb-2">email</label>
+                                <input type="email" class="form-control" id="editEmail"
+                                    placeholder="Email" required name="editEmail">
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" id="exampleFormControlInput2"
-                                        placeholder="Password" required name="password" minlength="6">
-                                    <span class="input-group-text" id="togglePassword">
-                                        <i class="far fa-eye" id="toggleIcon"></i>
-                                    </span>
-                                    <label for="exampleFormControlInput2" class="form-label mb-2"
-                                        id="passwordErrorLabel" style="color:red"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">Mobile</label>
-                                <input type="tel" class="form-control" id="exampleFormControlInput2"
-                                    placeholder="Mobile" required name="mobile">
+                                <label for="editMobile" class="form-label mb-2">Mobile</label>
+                                <input type="tel" class="form-control" id="editMobile"
+                                    placeholder="Mobile" required name="editMobile">
                             </div>
                         </div>
                         <div class="col-lg-12">
                             <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">Role</label>
-                                <select class="form-select wide form-control" id="validationCustom05" required=""
-                                    name="role">
+                                <label for="editRole" class="form-label mb-2">Role</label>
+                                <select class="form-select wide form-control" id="editRole" required=""
+                                    name="editRole">
                                     <option selected="" disabled="" value="">Please select</option>
                                     <option value="admin">Admin</option>
                                     <option value="teacher">Teacher</option>
@@ -264,7 +252,7 @@ include 'header.php';
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save">Save</button>
+                        <button type="submit" class="btn btn-primary" name="editSave">Save</button>
                     </center>
                 </form>
             </div>
@@ -278,17 +266,20 @@ include 'header.php';
         element.addEventListener("click", (e) => {
             console.log("edit ");
             tr = e.target.parentNode.parentNode;
-            name = tr.getElementsByTagName("td")[0].innerText;
-            email = tr.getElementsByTagName("td")[1].innerText;
-            mobile = tr.getElementsByTagName("td")[2].innerText;
-            password = tr.getElementsByTagName("td")[3].innerText;
+            id = tr.getElementsByTagName("td")[0].innerText;
+            name = tr.getElementsByTagName("td")[1].innerText;
+            email = tr.getElementsByTagName("td")[2].innerText;
+            mobile = tr.getElementsByTagName("td")[3].innerText;
+            role = tr.getElementsByTagName("td")[5].innerText;
             
-            console.log(name, email, mobile, password);
-            nameEdit.value = name;
-            emailEdit.value = email;
-            snoEdit.value = e.target.id;
+            console.log(name, email, mobile);
+            editName.value = name;
+            editEmail.value = email;
+            editMobile.value = mobile;
+            editRole.value = role;
+            idEdit.value = e.target.id;
             console.log(e.target.id);
-            $('#ViewModal').modal('toggle');
+            $('#EditModal').modal('toggle');
         })
     })
 </script>
