@@ -71,6 +71,9 @@ include 'header.php';
                                             <td>
                                                 <?php echo $sno; ?>
                                             </td>
+                                            <td style="display:none">
+                                                <?php echo $id; ?>
+                                            </td>
                                             <td>
                                                 <div class="trans-list" style="text-transform: capitalize;">
                                                     <h4>
@@ -111,7 +114,8 @@ include 'header.php';
                                                         class="fa-solid fa-eye"></i>View</button>
                                                 <button class='edit btn btn-sm btn-info light' id="<?php echo $id; ?>"><i
                                                         class="fa-solid fa-pen-to-square"></i>Edit</button>
-                                                <button type="button" class="btn btn-sm light btn-danger"><i
+                                                <button type="button" class="delete btn btn-sm light btn-danger"
+                                                    id="<?php echo 'd'.$id; ?>"><i
                                                         class="fa-solid fa-trash-can"></i>Delete</button>
                                             </td>
                                         </tr>
@@ -123,13 +127,9 @@ include 'header.php';
                             </table>
                         </div>
                     </div>
-                    <!--/column-->
                 </div>
             </div>
         </div>
-        <!--**********************************
-                    Footer start
-                ***********************************-->
     </div>
 </div>
 
@@ -178,7 +178,7 @@ include 'header.php';
                         <div class="col-xl-6">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">Mobile</label>
-                                <input type="tel" class="form-control" id="exampleFormControlInput2"
+                                <input type="tel" class="form-control" maxlength="10" id="exampleFormControlInput2"
                                     placeholder="Mobile" required name="mobile">
                             </div>
                         </div>
@@ -216,35 +216,33 @@ include 'header.php';
             <div class="modal-body">
                 <form action="" method="post">
                     <div class="row">
-                    <input type="hidden" name="idEdit" id="idEdit">
+                        <input type="hidden" name="editId" id="editId">
 
                         <div class="col-xl-6">
                             <div class="mb-3">
                                 <label for="editName" class="form-label mb-2">Name</label>
-                                <input type="text" class="form-control" required id="editName" 
-                                    placeholder="Name" name="editName">
+                                <input type="text" class="form-control" required id="editName" placeholder="Name"
+                                    name="editName">
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="mb-3">
                                 <label for="editEmail" class="form-label mb-2">email</label>
-                                <input type="email" class="form-control" id="editEmail"
-                                    placeholder="Email" required name="editEmail">
+                                <input type="email" class="form-control" id="editEmail" placeholder="Email" required
+                                    name="editEmail">
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="mb-3">
                                 <label for="editMobile" class="form-label mb-2">Mobile</label>
-                                <input type="tel" class="form-control" id="editMobile"
+                                <input type="tel" class="form-control" id="editMobile" maxlength="10"
                                     placeholder="Mobile" required name="editMobile">
                             </div>
                         </div>
-                        <div class="col-lg-12">
+                        <div class="col-xl-6">
                             <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
                                 <label for="editRole" class="form-label mb-2">Role</label>
-                                <select class="form-select wide form-control" id="editRole" required=""
-                                    name="editRole">
-                                    <option selected="" disabled="" value="">Please select</option>
+                                <select class="form-select wide form-control" id="editRole" required="" name="editRole">
                                     <option value="admin">Admin</option>
                                     <option value="teacher">Teacher</option>
                                 </select>
@@ -261,29 +259,46 @@ include 'header.php';
 </div>
 
 <script>
-    edits = document.getElementsByClassName('edit');
-    Array.from(edits).forEach((element) => {
+    // Edit Script
+    document.addEventListener('DOMContentLoaded', function () {
+        const edits = document.getElementsByClassName('edit');
+        Array.from(edits).forEach((element) => {
+            element.addEventListener('click', function (e) {
+                const tr = e.target.closest('tr');
+                const id = tr.querySelector('td:nth-child(2)').innerText;
+                const name = tr.querySelector('td:nth-child(3)').innerText;
+                const email = tr.querySelector('td:nth-child(4)').innerText;
+                const mobile = tr.querySelector('td:nth-child(5)').innerText;
+                const role = tr.querySelector('td:nth-child(7)').innerText;
+
+                document.getElementById('editId').value = id;
+                document.getElementById('editName').value = name;
+                document.getElementById('editEmail').value = email;
+                document.getElementById('editMobile').value = mobile;
+                const editRole = document.getElementById('editRole').value = role;
+                $('#EditModal').modal('show');
+            });
+        });
+    });
+
+    // Delete Script
+    deletes = document.getElementsByClassName('delete');
+    Array.from(deletes).forEach((element) => {
         element.addEventListener("click", (e) => {
             console.log("edit ");
-            tr = e.target.parentNode.parentNode;
-            id = tr.getElementsByTagName("td")[0].innerText;
-            name = tr.getElementsByTagName("td")[1].innerText;
-            email = tr.getElementsByTagName("td")[2].innerText;
-            mobile = tr.getElementsByTagName("td")[3].innerText;
-            role = tr.getElementsByTagName("td")[5].innerText;
-            
-            console.log(name, email, mobile);
-            editName.value = name;
-            editEmail.value = email;
-            editMobile.value = mobile;
-            editRole.value = role;
-            idEdit.value = e.target.id;
-            console.log(e.target.id);
-            $('#EditModal').modal('toggle');
+            id = e.target.id.substr(1);
+            if (confirm("Are you sure you want to delete this note!")) {
+                console.log("yes");
+                window.location = `delete_user?delete_id=${id}`;
+            }
+            else {
+                console.log("no");
+            }
         })
     })
 </script>
 <?php
+// Insert Code
 if (isset($_POST['save'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -338,6 +353,64 @@ if (isset($_POST['save'])) {
         exit;
     }
 }
+
+// Update code
+if (isset($_POST['editSave'])) {
+    $editId = $_POST['editId'];
+    $editName = $_POST['editName'];
+    $editEmail = $_POST['editEmail'];
+    $editMobile = $_POST['editMobile'];
+    $editRole = $_POST['editRole'];
+
+    $sql = "UPDATE `user` SET `name`='$editName',`email`='$editEmail',`mobile`='$editMobile',`role`='$editRole' WHERE id = '$editId'";
+    $res = mysqli_query($conn, $sql);
+    if ($res) {
+        echo '<script>
+            swal("Success!", "This user has been successfully Updated", "success");
+            setTimeout(function(){
+                window.location.href = window.location.href;
+            }, 1000);
+        </script>';
+        exit;
+    } else {
+        echo '<script>
+            swal("Error!", "Something Went Wrong", "error");
+            setTimeout(function(){
+                window.location.href = window.location.href;
+            }, 1000);
+        </script>';
+        exit;
+    }
+
+}
+
+// Delete code
+// $delete_id = isset($_GET['delete_id']) ? intval($_GET['delete_id']) : 0; // Validate and sanitize the input.
+
+// if ($delete_id > 0) {
+//     $stmt = $conn->prepare("DELETE FROM user WHERE id = ?");
+//     $stmt->bind_param("i", $delete_id);
+
+//     if ($stmt->execute()) {
+//         // Successfully deleted
+//         header("Location: user");
+//     } else {
+//         // Error
+//         echo '<script>
+//             alert("Error: Failed to delete user.");
+//             window.location = "user";
+//         </script>';
+//     }
+
+//     mysqli_close($conn);
+// } else {
+//     // Handle invalid input (e.g., delete_id is not a valid integer).
+//     echo '<script>
+//         alert("Invalid input.");
+//         window.location = "user";
+//     </script>';
+// }
+
 ?>
 
 <script>
@@ -378,10 +451,9 @@ if (isset($_POST['save'])) {
         });
     }
 
-</script>
 
 <!-- Show Password -->
-<script>
+
     document.addEventListener('DOMContentLoaded', function () {
         const passwordInput = document.querySelector('input[type="password"]');
         const togglePasswordButton = document.getElementById('togglePassword');
