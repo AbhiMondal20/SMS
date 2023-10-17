@@ -1,5 +1,23 @@
 <?php
 include 'header.php';
+
+if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
+    $id = $_GET['id'];
+    $sql2 = "DELETE FROM `user` WHERE id = ?";
+    $stmt = $conn->prepare($sql2);
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+        echo "<script>
+                swal('Success!', '', 'success');
+                setTimeout(function(){
+                    window.location.href = 'user';
+                }, 2000);
+        </script>";
+        exit;
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
 ?>
 
 <div class="content-body">
@@ -114,9 +132,7 @@ include 'header.php';
                                                         class="fa-solid fa-eye"></i>View</button>
                                                 <button class='edit btn btn-sm btn-info light' id="<?php echo $id; ?>"><i
                                                         class="fa-solid fa-pen-to-square"></i>Edit</button>
-                                                <button type="button" class="delete btn btn-sm light btn-danger"
-                                                    id="<?php echo 'd'.$id; ?>"><i
-                                                        class="fa-solid fa-trash-can"></i>Delete</button>
+                                                        <a href="javascript:void()" class="delete btn btn-sm light btn-danger" onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i>Delete</a>
                                             </td>
                                         </tr>
                                         <?php
@@ -196,7 +212,7 @@ include 'header.php';
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save">Save</button>
+                        <button type="submit" class="btn btn-primary" name="save"><i class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
@@ -250,7 +266,7 @@ include 'header.php';
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="editSave">Save</button>
+                        <button type="submit" class="btn btn-primary" name="editSave"><i class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
@@ -280,22 +296,6 @@ include 'header.php';
             });
         });
     });
-
-    // Delete Script
-    deletes = document.getElementsByClassName('delete');
-    Array.from(deletes).forEach((element) => {
-        element.addEventListener("click", (e) => {
-            console.log("edit ");
-            id = e.target.id.substr(1);
-            if (confirm("Are you sure you want to delete this note!")) {
-                console.log("yes");
-                window.location = `delete_user?delete_id=${id}`;
-            }
-            else {
-                console.log("no");
-            }
-        })
-    })
 </script>
 <?php
 // Insert Code
@@ -347,7 +347,7 @@ if (isset($_POST['save'])) {
         echo '<script>
             swal("Success!", "New User has been added successfully!", "success");
             setTimeout(function(){
-                window.location.reload();
+                window.location.href =  window.location.href
             }, 1000);
         </script>';
         exit;
@@ -383,34 +383,6 @@ if (isset($_POST['editSave'])) {
     }
 
 }
-
-// Delete code
-// $delete_id = isset($_GET['delete_id']) ? intval($_GET['delete_id']) : 0; // Validate and sanitize the input.
-
-// if ($delete_id > 0) {
-//     $stmt = $conn->prepare("DELETE FROM user WHERE id = ?");
-//     $stmt->bind_param("i", $delete_id);
-
-//     if ($stmt->execute()) {
-//         // Successfully deleted
-//         header("Location: user");
-//     } else {
-//         // Error
-//         echo '<script>
-//             alert("Error: Failed to delete user.");
-//             window.location = "user";
-//         </script>';
-//     }
-
-//     mysqli_close($conn);
-// } else {
-//     // Handle invalid input (e.g., delete_id is not a valid integer).
-//     echo '<script>
-//         alert("Invalid input.");
-//         window.location = "user";
-//     </script>';
-// }
-
 ?>
 
 <script>
@@ -481,6 +453,26 @@ if (isset($_POST['editSave'])) {
             }
         });
     });
+
+
+    // Delete Password
+
+    function confirmDelete() {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this user!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "?id=<?php echo $id; ?>&type=delete";
+        }
+    });
+}
+
 </script>
 
 <?php
