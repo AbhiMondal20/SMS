@@ -1,6 +1,5 @@
 <?php
 include 'header.php';
-
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
     $id = $_GET['id'];
     $sql2 = "DELETE FROM `user` WHERE id = ?";
@@ -132,7 +131,9 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                         class="fa-solid fa-eye"></i>View</button>
                                                 <button class='edit btn btn-sm btn-info light' id="<?php echo $id; ?>"><i
                                                         class="fa-solid fa-pen-to-square"></i>Edit</button>
-                                                        <a href="javascript:void()" class="delete btn btn-sm light btn-danger" onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i>Delete</a>
+                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
+                                                    onclick="confirmDelete();"><i
+                                                        class="fa-solid fa-trash-can"></i>Delete</a>
                                             </td>
                                         </tr>
                                         <?php
@@ -149,6 +150,45 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 
+<!-- View Modal -->
+<div class="modal fade" id="ViewModal" tabindex="-1" aria-labelledby="ViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label mb-2">Name</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput2" class="form-label mb-2">email</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput2" class="form-label mb-2">Password</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput2" class="form-label mb-2">Mobile</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
+                            <label for="exampleFormControlInput2" class="form-label mb-2">Role</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Add user Modal -->
 <div class="modal fade" id="CoursesModal" tabindex="-1" aria-labelledby="CoursesModalLabel" aria-hidden="true">
@@ -212,14 +252,14 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save"><i class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="save"><i
+                                class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Edit Modal -->
 <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
@@ -266,7 +306,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="editSave"><i class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="editSave"><i
+                                class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
@@ -286,13 +327,33 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                 const email = tr.querySelector('td:nth-child(4)').innerText;
                 const mobile = tr.querySelector('td:nth-child(5)').innerText;
                 const role = tr.querySelector('td:nth-child(7)').innerText;
-
                 document.getElementById('editId').value = id;
                 document.getElementById('editName').value = name;
                 document.getElementById('editEmail').value = email;
                 document.getElementById('editMobile').value = mobile;
                 const editRole = document.getElementById('editRole').value = role;
                 $('#EditModal').modal('show');
+            });
+        });
+    });
+
+    // view Script
+    document.addEventListener('DOMContentLoaded', function () {
+        const view = document.getElementsByClassName('view');
+        Array.from(view).forEach((element) => {
+            element.addEventListener('click', function (e) {
+                const tr = e.target.closest('tr');
+                const id = tr.querySelector('td:nth-child(2)').innerText;
+                const name = tr.querySelector('td:nth-child(3)').innerText;
+                const email = tr.querySelector('td:nth-child(4)').innerText;
+                const mobile = tr.querySelector('td:nth-child(5)').innerText;
+                const role = tr.querySelector('td:nth-child(7)').innerText;
+                document.getElementById('viewId').value = id;
+                document.getElementById('viewName').value = name;
+                document.getElementById('viewEmail').value = email;
+                document.getElementById('viewMobile').value = mobile;
+                const viewRole = document.getElementById('viewRole').value = role;
+                $('#ViewModal').modal('show');
             });
         });
     });
@@ -306,7 +367,6 @@ if (isset($_POST['save'])) {
     $password = $_POST['password'];
     $pass = password_hash($password, PASSWORD_BCRYPT);
     $role = $_POST['role'];
-
     $sql = "SELECT * FROM user WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
@@ -388,7 +448,6 @@ if (isset($_POST['editSave'])) {
 <script>
     function toggleStatus(id) {
         var id = id;
-
         // Show a confirmation SweetAlert
         swal({
             title: "Are you sure?",
@@ -424,7 +483,7 @@ if (isset($_POST['editSave'])) {
     }
 
 
-<!-- Show Password -->
+    <!-- Show Password -->
 
     document.addEventListener('DOMContentLoaded', function () {
         const passwordInput = document.querySelector('input[type="password"]');
@@ -458,20 +517,20 @@ if (isset($_POST['editSave'])) {
     // Delete Password
 
     function confirmDelete() {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this user!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "?id=<?php echo $id; ?>&type=delete";
-        }
-    });
-}
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this user!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "?id=<?php echo $id; ?>&type=delete";
+            }
+        });
+    }
 
 </script>
 
