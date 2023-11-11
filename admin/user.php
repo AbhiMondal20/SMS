@@ -62,7 +62,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                         <th>password</th>
                                         <th>Role</th>
                                         <th>Status</th>
-                                        <th class="text-end">Action</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -71,7 +71,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     $stmt = $conn->prepare($sql);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
-
                                     $sno = 0;
                                     while ($row = $result->fetch_assoc()) {
                                         $id = $row['id'];
@@ -126,14 +125,14 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                             </td>
 
                                             <td>
-                                                <button type="button" class="btn btn-sm light btn-secondary"
+                                                <!-- <button type="button" class="btn btn-sm light btn-secondary"
                                                     data-bs-toggle="modal" data-bs-target="#ViewModal"><i
-                                                        class="fa-solid fa-eye"></i>View</button>
+                                                        class="fa-solid fa-eye"></i></button> -->
                                                 <button class='edit btn btn-sm btn-info light' id="<?php echo $id; ?>"><i
-                                                        class="fa-solid fa-pen-to-square"></i>Edit</button>
+                                                        class="fa-solid fa-pen-to-square"></i></button>
                                                 <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
                                                     onclick="confirmDelete();"><i
-                                                        class="fa-solid fa-trash-can"></i>Delete</a>
+                                                        class="fa-solid fa-trash-can"></i></a>
                                             </td>
                                         </tr>
                                         <?php
@@ -162,11 +161,13 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                     <div class="col-xl-6">
                         <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label mb-2">Name</label>
+                            <input type="text" class="form-control" id="viewId" readonly>
                         </div>
                     </div>
                     <div class="col-xl-6">
                         <div class="mb-3">
                             <label for="exampleFormControlInput2" class="form-label mb-2">email</label>
+                            <input type="text" class="form-control" id="viewName" readonly>
                         </div>
                     </div>
                     <div class="col-xl-6">
@@ -339,8 +340,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
 
     // view Script
     document.addEventListener('DOMContentLoaded', function () {
-        const view = document.getElementsByClassName('view');
-        Array.from(view).forEach((element) => {
+        const views = document.getElementsByClassName('view');
+        Array.from(views).forEach((element) => {
             element.addEventListener('click', function (e) {
                 const tr = e.target.closest('tr');
                 const id = tr.querySelector('td:nth-child(2)').innerText;

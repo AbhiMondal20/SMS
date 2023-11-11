@@ -1,7 +1,6 @@
 <?php
 include('header.php');
 ?>
-
 <div class="content-body">
     <!-- row -->
     <div class="container-fluid">
@@ -38,36 +37,46 @@ include('header.php');
                                 id="example-student">
                                 <thead>
                                     <tr>
-                                        <th>
-                                            <input type="checkbox" class="form-check-input" id="checkAll" required="">
-                                        </th>
+                                        <th>#</th>
                                         <th>Course</th>
                                         <th>Course Duration (In Months)</th>
+                                        <th>Coures Prefix</th>
                                         <th>Semester Pattern</th>
+                                        <th>Semester Description</th>
                                         <th>Status</th>
-                                        <th class="text-end">Action</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <?php
+                                        $sql = "SELECT * FROM courses";
+                                        $stmt = $conn->prepare($sql);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        $sno = 0;
+                                        while ($row = $result->fetch_assoc()) {
+                                            $id = $row['id'];
+                                            $courses = $row['courses'];
+                                            $course_duration = $row['course_duration'];
+                                            $course_prefix = $row['course_prefix'];
+                                            $sem_parttern = $row['sem_parttern'];
+                                            $course_des = $row['course_des'];
+                                            $status = $row['status'];
+                                            $sno += 1;
+                                    ?>
+                                        <tr>
                                         <td>
-                                            <div class="checkbox me-0 align-self-center">
-                                                <div class="custom-control custom-checkbox ">
-                                                    <input type="checkbox" class="form-check-input" id="check8"
-                                                        required="">
-                                                    <label class="custom-control-label" for="check8"></label>
-                                                </div>
-                                            </div>
+                                            <?php echo $sno; ?>
                                         </td>
                                         <td>
                                             <div class="trans-list">
-                                                <h4>GNM</h4>
+                                                <h4><?php echo $courses; ?></h4>
                                             </div>
                                         </td>
-                                        <td><span class="text-primary font-w600">36</span></td>
-                                        <td>
-                                            <div class="">6</div>
-                                        </td>
+                                        <td><?php echo $course_duration; ?></td>
+                                        <td><?php echo $course_prefix; ?></td>
+                                        <td><?php echo $sem_parttern; ?></td>
+                                        <td><?php echo $course_des; ?></td>
                                         <td>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" role="switch"
@@ -76,14 +85,14 @@ include('header.php');
                                             </div>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm light btn-secondary"><i
-                                                    class="fa-solid fa-eye"></i>View</button>
+                                            
                                             <button type="button" class="btn btn-sm light btn-info"><i
-                                                    class="fa-solid fa-pen-to-square"></i>Edit</button>
+                                                    class="fa-solid fa-pen-to-square"></i></button>
                                             <button type="button" class="btn btn-sm light btn-danger"><i
-                                                    class="fa-solid fa-trash-can"></i>Delete</button>
+                                                    class="fa-solid fa-trash-can"></i></button>
                                         </td>
                                     </tr>
+                                        <?php } ?>
                                 </tbody>
                             </table>
                         </div>
@@ -97,9 +106,6 @@ include('header.php');
                 ***********************************-->
     </div>
 </div>
-
-
-
 <div class="modal fade" id="CoursesModal" tabindex="-1" aria-labelledby="CoursesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
@@ -119,8 +125,7 @@ include('header.php');
                             </div>
                             <div class="mb-3">
                                 <label for="exampleFormControlInput4" required class="form-label mb-2">COURSE DURATION </label>
-                                <input type="number" class="form-control" id="exampleFormControlInput4"
-                                    placeholder="IN MONTHS" name="course_duration">
+                                <input type="number" class="form-control" placeholder="IN MONTHS" name="course_duration">
                             </div>
 
                         </div>
@@ -149,13 +154,86 @@ include('header.php');
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save">Save</button>
+                        <button type="submit" class="btn btn-primary" name="save"><i
+                                class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
+<?php
+// Insert Code
+if (isset($_POST['save'])) {
+    $course = $_POST['course'];
+    $course_duration = $_POST['course_duration'];
+    $course_prefix = $_POST['course_prefix'];
+    $sem_parttern = $_POST['sem_parttern'];
+    $course_des = $_POST['course_des'];
+    $sqlCheck = "SELECT * FROM courses WHERE courses = ?";
+    $stmtCheck = $conn->prepare($sqlCheck);
+    $stmtCheck->bind_param("s", $course);
+    $stmtCheck->execute();
+    $resultCheck = $stmtCheck->get_result();
+
+    if ($resultCheck->num_rows > 0) {
+        echo '<script>
+        swal("Error!", "Course already exists!", "error");
+        </script>';
+        exit;
+    } else {
+        // Use a different variable for the second prepared statement
+        $sqlInsert = "INSERT INTO `courses`(`courses`, `course_duration`, `course_prefix`, `sem_parttern`, `course_des`, `added_by`) VALUES (?, ?, ?, ?, ?, 'admin')";
+        $stmtInsert = $conn->prepare($sqlInsert);
+        $stmtInsert->bind_param("sssss", $course, $course_duration, $course_prefix, $sem_parttern, $course_des);
+
+        if ($stmtInsert->execute()) {
+            echo '<script>
+                swal("Success!", "", "success");
+                setTimeout(function(){
+                    window.location.href =  window.location.href
+                }, 1000);
+            </script>';
+            exit;
+        } else {
+            echo '<script>
+                swal("Error!", "Error inserting data.", "error");
+            </script>';
+        }
+    }
+}
+// Update code
+if (isset($_POST['editSave'])) {
+    $editId = $_POST['editId'];
+    $editName = $_POST['editName'];
+    $editEmail = $_POST['editEmail'];
+    $editMobile = $_POST['editMobile'];
+    $editRole = $_POST['editRole'];
+
+    $sql = "UPDATE `user` SET `name`='$editName',`email`='$editEmail',`mobile`='$editMobile',`role`='$editRole' WHERE id = '$editId'";
+    $res = mysqli_query($conn, $sql);
+    if ($res) {
+        echo '<script>
+            swal("Success!", "This user has been successfully Updated", "success");
+            setTimeout(function(){
+                window.location.href = window.location.href;
+            }, 1000);
+        </script>';
+        exit;
+    } else {
+        echo '<script>
+            swal("Error!", "Something Went Wrong", "error");
+            setTimeout(function(){
+                window.location.href = window.location.href;
+            }, 1000);
+        </script>';
+        exit;
+    }
+
+}
+?>
 <?php
 include('footer.php');
 ?>
