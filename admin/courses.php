@@ -68,6 +68,9 @@ include('header.php');
                                         <td>
                                             <?php echo $sno; ?>
                                         </td>
+                                        <td style="display:none">
+                                                <?php echo $id; ?>
+                                        </td>
                                         <td>
                                             <div class="trans-list">
                                                 <h4><?php echo $courses; ?></h4>
@@ -86,10 +89,9 @@ include('header.php');
                                         </td>
                                         <td>
                                             
-                                            <button type="button" class="btn btn-sm light btn-info"><i
+                                            <button type="button" class="edit btn btn-sm light btn-info" id="<?php echo $id; ?>"><i
                                                     class="fa-solid fa-pen-to-square"></i></button>
-                                            <button type="button" class="btn btn-sm light btn-danger"><i
-                                                    class="fa-solid fa-trash-can"></i></button>
+                                            <a href="javascript:void()" class="delete btn btn-sm light btn-danger" onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i></a>
                                         </td>
                                     </tr>
                                         <?php } ?>
@@ -102,10 +104,11 @@ include('header.php');
             </div>
         </div>
         <!--**********************************
-                    Footer start
-                ***********************************-->
+                Footer start
+        ***********************************-->
     </div>
 </div>
+<!-- Add Modal -->
 <div class="modal fade" id="CoursesModal" tabindex="-1" aria-labelledby="CoursesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
@@ -163,60 +166,105 @@ include('header.php');
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-center">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="EditModals">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post">
+                <input type="hidden" name="editId" id="editId">
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput1" class="form-label mb-2">COURSE</label>
+                                <input type="text" class="form-control" required id="editCourse"
+                                    placeholder="COURSE" name="editCourse">
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput4" required class="form-label mb-2">COURSE DURATION </label>
+                                <input type="text" class="form-control" placeholder="IN MONTHS" name="editCourse_duration" id="editCourse_duration">
+                            </div>
+
+                        </div>
+                        <div class="col-xl-6">
+
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">COURSE PREFIX</label>
+                                <input type="text" class="form-control" required id="editCourse_prefix"
+                                    placeholder="COURSE PREFIX" name="editCourse_prefix">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label mb-2">SEMESTER PATTERN</label>
+                                <select class="default-select wide" aria-label="Default select example" name="editSem_parttern" id="editSem_parttern">
+                                    <option selected>Select Semester Pattern</option>
+                                    <option value="Yearly">Yearly</option>
+                                    <option value="Half Yearly">Half Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-12">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput5" class="form-label mb-2">COURSE DESCRIPTION</label>
+                                <textarea type="number" class="form-control" id="editCourse_des"
+                                    placeholder="COURSE DESCRIPTION" name="editCourse_des"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <center>
+                        <button type="submit" class="btn btn-primary" name="editSave"><i
+                                class="fa-regular fa-floppy-disk"></i> Save</button>
+                    </center>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const edits = document.getElementsByClassName('edit');
+    
+    Array.from(edits).forEach((element) => {
+        element.addEventListener('click', function (e) {
+            const tr = e.target.closest('tr');
+            const id = tr.querySelector('td:nth-child(2)').innerText;
+            const course = tr.querySelector('td:nth-child(3)').innerText;
+            const course_duration = tr.querySelector('td:nth-child(4)').innerText;
+            const course_prefix = tr.querySelector('td:nth-child(5)').innerText;
+            const sem_pattern = tr.querySelector('td:nth-child(6)').innerText;
+            const course_des = tr.querySelector('td:nth-child(7)').innerText;
+            document.getElementById('editId').value = id;
+            document.getElementById('editCourse').value = course;
+            document.getElementById('editCourse_duration').value = course_duration;
+            document.getElementById('editCourse_prefix').value = course_prefix;
+            document.getElementById('editSem_parttern').value = sem_pattern;
+            document.getElementById('editCourse_des').value = course_des;
+            $('#EditModal').modal('show');
+        });
+    });
+});
+
+</script>
 
 <?php
-// Insert Code
-if (isset($_POST['save'])) {
-    $course = $_POST['course'];
-    $course_duration = $_POST['course_duration'];
-    $course_prefix = $_POST['course_prefix'];
-    $sem_parttern = $_POST['sem_parttern'];
-    $course_des = $_POST['course_des'];
-    $sqlCheck = "SELECT * FROM courses WHERE courses = ?";
-    $stmtCheck = $conn->prepare($sqlCheck);
-    $stmtCheck->bind_param("s", $course);
-    $stmtCheck->execute();
-    $resultCheck = $stmtCheck->get_result();
-
-    if ($resultCheck->num_rows > 0) {
-        echo '<script>
-        swal("Error!", "Course already exists!", "error");
-        </script>';
-        exit;
-    } else {
-        // Use a different variable for the second prepared statement
-        $sqlInsert = "INSERT INTO `courses`(`courses`, `course_duration`, `course_prefix`, `sem_parttern`, `course_des`, `added_by`) VALUES (?, ?, ?, ?, ?, 'admin')";
-        $stmtInsert = $conn->prepare($sqlInsert);
-        $stmtInsert->bind_param("sssss", $course, $course_duration, $course_prefix, $sem_parttern, $course_des);
-
-        if ($stmtInsert->execute()) {
-            echo '<script>
-                swal("Success!", "", "success");
-                setTimeout(function(){
-                    window.location.href =  window.location.href
-                }, 1000);
-            </script>';
-            exit;
-        } else {
-            echo '<script>
-                swal("Error!", "Error inserting data.", "error");
-            </script>';
-        }
-    }
-}
 // Update code
 if (isset($_POST['editSave'])) {
     $editId = $_POST['editId'];
-    $editName = $_POST['editName'];
-    $editEmail = $_POST['editEmail'];
-    $editMobile = $_POST['editMobile'];
-    $editRole = $_POST['editRole'];
+    $editCourse = $_POST['editCourse'];
+    $editCourse_duration = $_POST['editCourse_duration'];
+    $editCourse_prefix = $_POST['editCourse_prefix'];
+    $editSem_parttern = $_POST['editSem_parttern'];
+    $editCourse_des = $_POST['editCourse_des'];
+    $modified_date = date('Y-m-d H:i:s');
 
-    $sql = "UPDATE `user` SET `name`='$editName',`email`='$editEmail',`mobile`='$editMobile',`role`='$editRole' WHERE id = '$editId'";
+    $sql = "UPDATE `courses` SET `courses`='$editCourse',`course_duration`='$editCourse',`course_prefix`='$editCourse_prefix',`sem_parttern`='$editSem_parttern',`course_des`='$editCourse_des',`modified_by`='Admin',`modified_date`='$modified_date' WHERE id = '$editId'";
     $res = mysqli_query($conn, $sql);
     if ($res) {
         echo '<script>
-            swal("Success!", "This user has been successfully Updated", "success");
+            swal("Success!", "This Course has been successfully Updated", "success");
             setTimeout(function(){
                 window.location.href = window.location.href;
             }, 1000);
