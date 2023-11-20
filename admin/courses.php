@@ -1,5 +1,23 @@
 <?php
 include('header.php');
+
+if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
+    $id = $_GET['id'];
+    $sql2 = "DELETE FROM `courses` WHERE id = ?";
+    $stmt = $conn->prepare($sql2);
+    $stmt->bind_param("i", $id);
+    if ($stmt->execute()) {
+        echo "<script>
+                swal('Success!', '', 'success');
+                setTimeout(function(){
+                    window.location.href = 'courses';
+                }, 2000);
+        </script>";
+        exit;
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
 ?>
 <div class="content-body">
     <!-- row -->
@@ -82,9 +100,10 @@ include('header.php');
                                         <td><?php echo $course_des; ?></td>
                                         <td>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="flexSwitchCheckChecked" checked>
-                                                <label class="form-check-label" for="flexSwitchCheckChecked">Active</label>
+                                                    <input class="form-check-input" type="checkbox" role="switch" <?php if ($status == '1') {
+                                                        echo "checked";
+                                                    } ?> id="flexSwitchCheckChecked"
+                                                        onclick="toggleStatus(<?php echo $id; ?>)">
                                             </div>
                                         </td>
                                         <td>
@@ -130,7 +149,6 @@ include('header.php');
                                 <label for="exampleFormControlInput4" required class="form-label mb-2">COURSE DURATION </label>
                                 <input type="number" class="form-control" placeholder="IN MONTHS" name="course_duration">
                             </div>
-
                         </div>
                         <div class="col-xl-6">
 
@@ -143,8 +161,8 @@ include('header.php');
                                 <label class="form-label mb-2">SEMESTER PATTERN</label>
                                 <select class="default-select wide" aria-label="Default select example" name="sem_parttern">
                                     <option selected>Select Semester Pattern</option>
-                                    <option value="yearly">Yearly</option>
-                                    <option value="half yearly">Half Yearly</option>
+                                    <option value="Yearly">Yearly</option>
+                                    <option value="Half Yearly">Half Yearly</option>
                                 </select>
                             </div>
                         </div>
@@ -157,8 +175,9 @@ include('header.php');
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save"><i
-                                class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="save">
+                            <i class="fa-regular fa-floppy-disk"></i> Save
+                        </button>
                     </center>
                 </form>
             </div>
@@ -247,9 +266,102 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+ // Delete Script
+ function confirmDelete() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this user!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "?id=<?php echo $id; ?>&type=delete";
+            }
+        });
+    }
+
+// Status
+    function toggleStatus(id) {
+        var id = id;
+        // Show a confirmation SweetAlert
+        swal({
+            title: "Are you sure?",
+            text: "Do you want to Change the Course status?",
+            icon: "warning",
+            buttons: {
+                cancel: "Cancel", // Rename the Cancel button
+                confirm: "OK"     // Rename the OK button
+            },
+            dangerMode: true,
+        }).then((confirmed) => {
+            if (confirmed) {
+                // If the user confirms, make the AJAX request and set the status to "Active"
+                $.ajax({
+                    url: "load/course_update_status.php",
+                    type: "post",
+                    data: { chatId: id },
+                    success: function (result) {
+                        // if (result == '1') {
+                        //     swal("Success", "User is now Active", "success");
+                        // }else if (result == '0') {
+                        //     swal("Success", "User is now Inactive", "success");
+                        // }
+                        //  else {
+                        //     swal("Error", "Failed to update user status", "error");
+                        // }
+                    }
+                });
+            } else {
+                // If the user cancels, do nothing (status remains unchanged)
+            }
+        });
+    }
+
 </script>
 
 <?php
+// Insert Code
+if (isset($_POST['save'])) {
+    $course = $_POST['course'];
+    $course_duration = $_POST['course_duration'];
+    $course_prefix = $_POST['course_prefix'];
+    $sem_parttern = $_POST['sem_parttern'];
+    $course_des = $_POST['course_des'];
+    $sqlCheck = "SELECT * FROM courses WHERE courses = ?";
+    $stmtCheck = $conn->prepare($sqlCheck);
+    $stmtCheck->bind_param("s", $course);
+    $stmtCheck->execute();
+    $resultCheck = $stmtCheck->get_result();
+
+    if ($resultCheck->num_rows > 0) {
+        echo '<script>
+        swal("Error!", "Course already exists!", "error");
+        </script>';
+        exit;
+    } else {
+        // Use a different variable for the second prepared statement
+        $sqlInsert = "INSERT INTO `courses`(`courses`, `course_duration`, `course_prefix`, `sem_parttern`, `course_des`, `added_by`) VALUES (?, ?, ?, ?, ?, 'admin')";
+        $stmtInsert = $conn->prepare($sqlInsert);
+        $stmtInsert->bind_param("sssss", $course, $course_duration, $course_prefix, $sem_parttern, $course_des);
+
+        if ($stmtInsert->execute()) {
+            echo '<script>
+                swal("Success!", "", "success");
+                setTimeout(function(){
+                    window.location.href =  window.location.href
+                }, 1000);
+            </script>';
+            exit;
+        } else {
+            echo '<script>
+                swal("Error!", "Error inserting data.", "error");
+            </script>';
+        }
+    }
+}
 // Update code
 if (isset($_POST['editSave'])) {
     $editId = $_POST['editId'];
@@ -260,8 +372,20 @@ if (isset($_POST['editSave'])) {
     $editCourse_des = $_POST['editCourse_des'];
     $modified_date = date('Y-m-d H:i:s');
 
-    $sql = "UPDATE `courses` SET `courses`='$editCourse',`course_duration`='$editCourse',`course_prefix`='$editCourse_prefix',`sem_parttern`='$editSem_parttern',`course_des`='$editCourse_des',`modified_by`='Admin',`modified_date`='$modified_date' WHERE id = '$editId'";
-    $res = mysqli_query($conn, $sql);
+    // Prepare and bind the SQL statement
+    $sql = "UPDATE courses SET courses=?, course_duration=?, course_prefix=?, sem_parttern=?, course_des=?, modified_by=?, modified_date=? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+
+    // Bind parameters
+    $stmt->bind_param("sssssssi", $editCourse, $editCourse_duration, $editCourse_prefix, $editSem_parttern, $editCourse_des, $modified_by, $modified_date, $editId);
+
+    // Execute the statement
+    $res = $stmt->execute();
+
+    // Close the statement
+    $stmt->close();
+
+    // Check the result
     if ($res) {
         echo '<script>
             swal("Success!", "This Course has been successfully Updated", "success");

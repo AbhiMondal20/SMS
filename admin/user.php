@@ -130,9 +130,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                         class="fa-solid fa-eye"></i></button> -->
                                                 <button class='edit btn btn-sm btn-info light' id="<?php echo $id; ?>"><i
                                                         class="fa-solid fa-pen-to-square"></i></button>
-                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
-                                                    onclick="confirmDelete();"><i
-                                                        class="fa-solid fa-trash-can"></i></a>
+                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger" onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                         <?php
@@ -452,7 +451,7 @@ if (isset($_POST['editSave'])) {
         // Show a confirmation SweetAlert
         swal({
             title: "Are you sure?",
-            text: "Do you want to toggle the user's status?",
+            text: "Do you want to Change the user's status?",
             icon: "warning",
             buttons: {
                 cancel: "Cancel", // Rename the Cancel button

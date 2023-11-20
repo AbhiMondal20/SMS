@@ -9,4 +9,5 @@
     Course Page:
          Add Course
          Update Course
-         
+         Delete Course
+         Active / Deactive
