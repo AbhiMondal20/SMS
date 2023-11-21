@@ -3,7 +3,7 @@ include('header.php');
 
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
     $id = $_GET['id'];
-    $sql2 = "DELETE FROM `session` WHERE id = ?";
+    $sql2 = "DELETE FROM `batches` WHERE id = ?";
     $stmt = $conn->prepare($sql2);
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
@@ -41,7 +41,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                             </div>
                             <div>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#SessionModal">
+                                    data-bs-target="#BatchesModal">
                                     + Add
                                 </button>
                             </div>
@@ -55,7 +55,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Session</th>
+                                        <th>Batches</th>
                                         <th>Prefix</th>
                                         <th>Description</th>
                                         <th>Status</th>
@@ -129,11 +129,11 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 <!-- Add Modal -->
-<div class="modal fade" id="SessionModal" tabindex="-1" aria-labelledby="SessionModalLabel" aria-hidden="true">
+<div class="modal fade" id="BatchesModal" tabindex="-1" aria-labelledby="BatchesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="SessionModalLabel">Session Management</h5>
+                <h5 class="modal-title" id="BatchesModalLabel">Batches Management</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -141,9 +141,22 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                     <div class="row">
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput1" class="form-label mb-2">SESSION</label>
-                                <input type="text" class="form-control" required id="exampleFormControlInput1"
-                                    placeholder="SESSION" name="session">
+                                <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
+                                    <label for="exampleFormControlInput2" class="form-label mb-2">SESSION</label>
+                                    <select class="form-select wide form-control" id="validationCustom05" required=""
+                                        name="role">
+                                        <option selected="" disabled="" value="">Please select</option>
+                                        <?php
+                                            $sql = "SELECT * FROM session WHERE status = 1";
+                                            $res = mysqli_query($conn, $sql);
+                                            while($row = mysqli_fetch_assoc($res)){
+                                                $id = $row['id'];
+                                                $session = $row['session'];
+                                              echo '<option value="'.$id.'">'.$session.'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6">

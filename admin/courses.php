@@ -190,7 +190,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="EditModals">Edit User</h5>
+                <h5 class="modal-title" id="EditModals">Edit Course</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
  function confirmDelete() {
         Swal.fire({
             title: 'Are you sure?',
-            text: 'You will not be able to recover this user!',
+            text: 'You will not be able to recover this course!',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -298,24 +298,24 @@ document.addEventListener('DOMContentLoaded', function () {
             dangerMode: true,
         }).then((confirmed) => {
             if (confirmed) {
-                // If the user confirms, make the AJAX request and set the status to "Active"
+                // If the course confirms, make the AJAX request and set the status to "Active"
                 $.ajax({
                     url: "load/course_update_status.php",
                     type: "post",
                     data: { chatId: id },
                     success: function (result) {
                         // if (result == '1') {
-                        //     swal("Success", "User is now Active", "success");
+                        //     swal("Success", "course is now Active", "success");
                         // }else if (result == '0') {
-                        //     swal("Success", "User is now Inactive", "success");
+                        //     swal("Success", "course is now Inactive", "success");
                         // }
                         //  else {
-                        //     swal("Error", "Failed to update user status", "error");
+                        //     swal("Error", "Failed to update course status", "error");
                         // }
                     }
                 });
             } else {
-                // If the user cancels, do nothing (status remains unchanged)
+                // If the course cancels, do nothing (status remains unchanged)
             }
         });
     }

@@ -8,6 +8,8 @@ function getPageTitle() {
         'index.php' => 'Dashboard',
         'courses.php' => 'Course Management Listing',
         'sessions.php' => 'Session Management Listing',
+        'batches.php' => 'Batches Management Listing',
+        'fees-head.php' => 'Fees Head Management Listing',
         'user.php' => 'User Management Listing',
         // Add more pages and their titles as needed
     );

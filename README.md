@@ -11,3 +11,9 @@
          Update Course
          Delete Course
          Active / Deactive
+    Session Page:
+         Add Session
+         Update Session
+         Active / Deactive
+         Delete
+    
