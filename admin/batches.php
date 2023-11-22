@@ -161,9 +161,22 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         </div>
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">PREFIX</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput2"
-                                    placeholder="SESSION PREFIX" required name="session_prefix">
+                                <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
+                                    <label for="exampleFormControlInput2" class="form-label mb-2">COURSE</label>
+                                    <select class="form-select wide form-control" id="validationCustom05" required=""
+                                        name="role">
+                                        <option selected="" disabled="" value="">Please select</option>
+                                        <?php
+                                            $sql = "SELECT * FROM courses WHERE status = 1";
+                                            $res = mysqli_query($conn, $sql);
+                                            while($row = mysqli_fetch_assoc($res)){
+                                                $id = $row['id'];
+                                                $courses = $row['courses'];
+                                              echo '<option value="'.$id.'">'.$courses.'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-12">
@@ -176,8 +189,9 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save"><i
-                                class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="save">
+                            <i class="fa-regular fa-floppy-disk"></i> Save
+                        </button>
                     </center>
                 </form>
             </div>
