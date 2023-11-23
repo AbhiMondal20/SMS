@@ -41,7 +41,6 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert 2 library -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-
 </head>
 <body>
 
@@ -348,7 +347,6 @@
 						<ul aria-expanded="false">
 							<li><a href="index">Dashboard</a></li>
 						</ul>
-
 					</li>
                     <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
 						<i class="material-symbols-outlined">settings</i>
@@ -362,7 +360,6 @@
 						<li><a href="monthly-fees">Monthly Fees</a></li>
 						<li><a href="counter-collection">Counter Collection</a></li>
 						<li><a href="staff-master">Staff Master</a></li>
-						
 					</ul>
 
 					</li>
@@ -386,7 +383,6 @@
 						<li><a href="teacher-detail">Teacher Detail</a></li>
 						<li><a href="add-teacher">Add New Teacher</a></li>
 					</ul>
-
 					</li>
                     <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
 						<i class="material-symbols-outlined">note</i>
@@ -399,9 +395,7 @@
 						<li><a href="Student Ledger Report">Cancellation History</a></li>
 						<li><a href="Meal Issued">Meal Issued</a></li> 
 						<li><a href="Daily Item Stock">Daily Item Stock</a></li>
-						
 					</ul>
-
 					</li>
 					<li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
 						<i class="material-symbols-outlined">restaurant_menu</i>

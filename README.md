@@ -16,4 +16,8 @@
          Update Session
          Active / Deactive
          Delete
+   Batches Page:
+         Add Batches
+         Active / Deactive
+         Delete 
     
