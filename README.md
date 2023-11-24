@@ -16,8 +16,9 @@
          Update Session
          Active / Deactive
          Delete
-   Batches Page:
+    Batches Page:
          Add Batches
          Active / Deactive
          Delete 
-    
+    Fees Head Page:
+         
