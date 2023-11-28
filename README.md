@@ -21,4 +21,7 @@
          Active / Deactive
          Delete 
     Fees Head Page:
-         
+         Add Fees Head
+         Update Fees Head
+         Active / Deactive
+         Delete
