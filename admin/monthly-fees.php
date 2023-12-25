@@ -2,14 +2,14 @@
 include('header.php');
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
     $id = $_GET['id'];
-    $sql2 = "DELETE FROM `fees_head` WHERE id = ?";
+    $sql2 = "DELETE FROM `monthly_fees` WHERE id = ?";
     $stmt = $conn->prepare($sql2);
     $stmt->bind_param("i", $id);
     if ($stmt->execute()) {
         echo "<script>
                 swal('Success!', '', 'success');
                 setTimeout(function(){
-                    window.location.href = 'fees-head';
+                    window.location.href = 'monthly-fees';
                 }, 2000);
         </script>";
         exit;
@@ -55,26 +55,36 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Title</th>
+                                        <th>Batch</th>
+                                        <th>Month</th>
+                                        <th>Last Fine Due Date</th>
+                                        <th>Last Fine Amount</th>
+                                        <th>Total Fees</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                        $sql = "SELECT * FROM `fees_head`";
-                                        $stmt = $conn->prepare($sql);
-                                        if (!$stmt) {
-                                            die("Error in SQL query: " . $conn->error);
-                                        }
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-                                            $sno = 0;
-                                            while ($row = $result->fetch_assoc()) {
-                                                $id = $row['id'];
-                                                $title = $row['title'];
-                                                $status = $row['status'];
-                                                $sno += 1;
+                                    $sql = "SELECT * FROM `monthly_fees` INNER JOIN batches ON batches.id = monthly_fees.batch_id";
+                                    $stmt = $conn->prepare($sql);
+                                    if (!$stmt) {
+                                        die("Error in SQL query: " . $conn->error);
+                                    }
+                                    $stmt->execute();
+                                    $result = $stmt->get_result();
+                                    $sno = 0;
+                                    while ($row = $result->fetch_assoc()) {
+                                        $sno += 1;
+                                        $id = $row['id'];
+                                        $batch_id = $row['batch_id'];
+                                        $batches_name = $row['batches_name'];
+                                        $year = $row['year'];
+                                        $month = $row['month'];
+                                        $late_fine_due_date = $row['late_fine_due_date'];
+                                        $late_fine_amount = $row['late_fine_amount'];
+                                        $total_fees = $row['total_fees'];
+                                        $status = $row['status'];
                                         ?>
                                         <tr>
                                             <td>
@@ -86,7 +96,37 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                             <td>
                                                 <div class="trans-list">
                                                     <h4>
-                                                        <?php echo $title; ?>
+                                                        <?php echo $batches_name; ?>
+                                                    </h4>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="trans-list">
+                                                    <h4>
+                                                        <?php echo $month; ?>
+                                                    </h4>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="trans-list">
+                                                    <h4>
+                                                        <?php echo $late_fine_due_date; ?>
+                                                    </h4>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="trans-list">
+                                                    <h4>
+                                                        ₹
+                                                        <?php echo $late_fine_amount; ?>
+                                                    </h4>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="trans-list">
+                                                    <h4>
+                                                        ₹
+                                                        <?php echo $total_fees; ?>
                                                     </h4>
                                                 </div>
                                             </td>
@@ -103,7 +143,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                     id="<?php echo $id; ?>">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
-                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger" onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i></a>
+                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
+                                                    onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i></a>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -125,18 +166,52 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     <div class="modal-dialog modal-dialog-center">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="BatchesModalLabel">Batches Management</h5>
+                <h5 class="modal-title" id="BatchesModalLabel">Monthy Fees Management</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="" method="post">
                     <div class="row">
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">TITLE</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="TITLE"
-                                    required name="title">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
+                                <select class="form-select wide form-control" id="validationCustom05" required=""
+                                    name="batch">
+                                    <option selected="" disabled="" value="">Please select</option>
+                                    <?php
+                                    $sql = "SELECT * FROM batches";
+                                    $res = mysqli_query($conn, $sql);
+                                    while ($row = mysqli_fetch_assoc($res)) {
+                                        $batches_name = $row['batches_name'];
+                                        $id = $row['id'];
+                                        echo '<option value="' . $id . '">' . $batches_name . '</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">YEAR</label>
+                                <select class="form-select wide form-control" id="validationCustom05" required=""
+                                    name="year">
+                                    <option selected="" disabled="" value="">Please select</option>
+                                    <?php
+                                    $sql = "SELECT * FROM batches where batches_name = '$batches_name'";
+                                    $res = mysqli_query($conn, $sql);
+                                    while ($row = mysqli_fetch_assoc($res)) {
+                                        $batches_name = $row['batches_name'];
+                                        $id = $row['id'];
+                                        echo '<option value="' . $id . '">' . $batches_name . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
+                            <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="BATCH"
+                                required name="batch">
                         </div>
                     </div>
                     <center>
@@ -149,6 +224,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         </div>
     </div>
 </div>
+
 <!-- Edit Modal -->
 <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
@@ -159,12 +235,13 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
             </div>
             <div class="modal-body">
                 <form action="" method="post">
-                <input type="hidden" name="editId" id="editId">
+                    <input type="hidden" name="editId" id="editId">
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">TITLE</label>
-                                <input type="text" class="form-control" id="editTitle" placeholder="TITLE" required name="editTitle">
+                                <input type="text" class="form-control" id="editTitle" placeholder="TITLE" required
+                                    name="editTitle">
                             </div>
                         </div>
                     </div>
@@ -178,6 +255,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const edits = document.getElementsByClassName('edit');
@@ -226,7 +304,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         }).then((confirmed) => {
             if (confirmed) {
                 $.ajax({
-                    url: "load/fees_head_update_status.php",
+                    url: "load/monthly_fees_update_status.php",
                     type: "post",
                     data: { chatId: id },
                     success: function (result) {
@@ -249,7 +327,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
 // Insert Code
 if (isset($_POST['save'])) {
     $title = $_POST['title'];
-    $sqlCheck = "SELECT * FROM fees_head WHERE title = ?";
+    $sqlCheck = "SELECT * FROM monthly_fees WHERE title = ?";
     $stmtCheck = $conn->prepare($sqlCheck);
     $stmtCheck->bind_param("s", $title);
     $stmtCheck->execute();
@@ -264,7 +342,7 @@ if (isset($_POST['save'])) {
         </script>';
         exit;
     } else {
-        $sqlInsert = "INSERT INTO `fees_head`(`title`, `status`, `added_by`) VALUES (?, '1', '1')";
+        $sqlInsert = "INSERT INTO `monthly_fees`(`title`, `status`, `added_by`) VALUES (?, '1', '1')";
         $stmtInsert = $conn->prepare($sqlInsert);
         $stmtInsert->bind_param("s", $title);
         if ($stmtInsert->execute()) {
@@ -288,14 +366,12 @@ if (isset($_POST['editSave'])) {
     $editId = $_POST['editId'];
     $editTitle = $_POST['editTitle'];
     $modified_by = 1;
-    
     $modified_date = date('Y-m-d H:i:s');
-    $sql = "UPDATE `fees_head` SET `title`= ?,`modified_by`= ?,`modified_date`= ? WHERE id = ?";
+    $sql = "UPDATE `monthly_fees` SET `title`= ?,`modified_by`= ?,`modified_date`= ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $modified_by = 1;
     $stmt->bind_param("sisi", $editTitle, $modified_by, $modified_date, $editId);
     $res = $stmt->execute();
-
     // Check the result
     if ($res) {
         echo '<script>

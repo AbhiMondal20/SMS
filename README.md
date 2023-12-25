@@ -25,3 +25,5 @@
          Update Fees Head
          Active / Deactive
          Delete
+    Monthly-Fees Page:
+    
