@@ -39,8 +39,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     </a></span>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#BatchesModal">
+                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg">
                                     + Add
                                 </button>
                             </div>
@@ -162,23 +161,24 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 <!-- Add Modal -->
-<div class="modal fade" id="BatchesModal" tabindex="-1" aria-labelledby="BatchesModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-center">
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="BatchesModalLabel">Monthy Fees Management</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Fees Management</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
             </div>
             <div class="modal-body">
                 <form action="" method="post">
                     <div class="row">
-                        <div class="col-xl-6">
+                        <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
-                                <select class="form-select wide form-control" id="validationCustom05" required=""
-                                    name="batch">
-                                    <option selected="" disabled="" value="">Please select</option>
+                                <select class="form-select wide form-control" id="batch" onchange="getbatch(this.value)" required="" name="batch">
+                                    <option disabled selected>Please select</option>
                                     <?php
+                                    // Assuming $conn is your database connection
                                     $sql = "SELECT * FROM batches";
                                     $res = mysqli_query($conn, $sql);
                                     while ($row = mysqli_fetch_assoc($res)) {
@@ -190,28 +190,71 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xl-6">
+                        <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">YEAR</label>
-                                <select class="form-select wide form-control" id="validationCustom05" required=""
-                                    name="year">
-                                    <option selected="" disabled="" value="">Please select</option>
-                                    <?php
-                                    $sql = "SELECT * FROM batches where batches_name = '$batches_name'";
-                                    $res = mysqli_query($conn, $sql);
-                                    while ($row = mysqli_fetch_assoc($res)) {
-                                        $batches_name = $row['batches_name'];
-                                        $id = $row['id'];
-                                        echo '<option value="' . $id . '">' . $batches_name . '</option>';
-                                    }
-                                    ?>
+                                <select class="form-select wide form-control" id="year" required="" name="year">
+                                    <option disabled selected>Please select</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
-                            <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="BATCH"
-                                required name="batch">
+
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">MONTH</label>
+                                <select class="form-select wide form-control" id="validationCustom05" required=""
+                                    name="month">
+                                        <option disabled selected>Select</option>
+                                        <option value="1">Jan</option>
+                                        <option value="2">Feb</option>
+                                        <option value="3">Mar</option>
+                                        <option value="4">Apr</option>
+                                        <option value="5">May</option>
+                                        <option value="6">Jun</option>
+                                        <option value="7">Jul</option>
+                                        <option value="8">Aug</option>
+                                        <option value="9">Sep</option>
+                                        <option value="10">Oct</option>
+                                        <option value="11">Nov</option>
+                                        <option value="12">Dec</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="form-container">
+                            <div class="col-xl-4">
+                                <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">FEES HEAD</label>
+                                <select class="form-select wide form-control" id="validationCustom05" required=""
+                                    name="fees_head">
+                                    <option value="0">Select</option>
+                                    <option value="2">Tuition fees</option>
+                                    <option value="5">Affiliation fees</option>
+                                    <option value="4">Library fees</option>
+                                    <option value="6">Celebration</option>
+                                    <option value="7">Computer fee</option>
+                                    <option value="8">Development fees</option>
+                                    <option value="9">Lamp Lighting fee</option>
+                                    <option value="10">Hostel Rent</option>
+                                    <option value="11">Bus fees</option>
+                                    <option value="12">Electricity</option>
+                                    <option value="13">Fooding </option>
+                                    <option value="14">Annual fees</option>
+                                    <option value="15">Hostel Rent 1st Month</option>
+                                    <option value="16">Celebration etc</option>
+                                </select>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput2" class="form-label mb-2">AMOUNT</label>
+                                    <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="Amount"
+                                        required name="amount">
+                                </div>
+                            </div>
+                            
+                            <div class="col-xl-4 mt-4">
+                                <button class="btn btn-primary" id="add_btn" onclick="addNewRow()">+ Add</button>
+                                <button class="btn btn-primary" id="delete_btn" onclick="addNewRow()"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
                         </div>
                     </div>
                     <center>
@@ -256,7 +299,48 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 
+
 <script>
+        function addNewRow() {
+            // Clone the existing form container
+            var formContainer = document.getElementById('form-container');
+            var clonedRow = formContainer.cloneNode(true);
+
+            // Clear input values in the cloned row
+            var inputs = clonedRow.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].value = '';
+            }
+
+            // Append the cloned row to the container
+            formContainer.parentNode.appendChild(clonedRow);
+        }
+    </script>
+
+<script>
+    
+// Year dropdown Script
+function getbatch(batch) {
+    $.ajax({
+        url: "load/get_year.php",
+        type: "POST",
+        data: { batch: batch },
+        console.log(batch);
+            dataType: "json",
+            success: function (data) {
+                var yearDropdown = $("#year");
+                yearDropdown.empty().append('<option value="">-- Select --</option>');
+                $.each(data, function (index, year) {
+                    yearDropdown.append('<option value="' + year.id + '">' + year.name + '</option>');
+                });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("AJAX Error:", textStatus, errorThrown);
+            }
+        });
+    }
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const edits = document.getElementsByClassName('edit');
         Array.from(edits).forEach((element) => {
