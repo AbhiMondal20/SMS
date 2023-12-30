@@ -39,7 +39,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     </a></span>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg">
+                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                    data-bs-target=".bd-example-modal-lg">
                                     + Add
                                 </button>
                             </div>
@@ -175,7 +176,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
-                                <select class="form-select wide form-control" id="batch" onchange="getbatch(this.value)" required="" name="batch">
+                                <select class="form-select wide form-control" id="batch" onchange="getbatch(this.value)"
+                                    required="" name="batch_id">
                                     <option disabled selected>Please select</option>
                                     <?php
                                     // Assuming $conn is your database connection
@@ -193,75 +195,95 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">YEAR</label>
-                                <select class="form-select wide form-control" id="year" required="" name="year">
+                                <select class="form-select wide form-control" id="year" name="year">
                                     <option disabled selected>Please select</option>
                                 </select>
                             </div>
                         </div>
-
                         <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">MONTH</label>
                                 <select class="form-select wide form-control" id="validationCustom05" required=""
                                     name="month">
-                                        <option disabled selected>Select</option>
-                                        <option value="1">Jan</option>
-                                        <option value="2">Feb</option>
-                                        <option value="3">Mar</option>
-                                        <option value="4">Apr</option>
-                                        <option value="5">May</option>
-                                        <option value="6">Jun</option>
-                                        <option value="7">Jul</option>
-                                        <option value="8">Aug</option>
-                                        <option value="9">Sep</option>
-                                        <option value="10">Oct</option>
-                                        <option value="11">Nov</option>
-                                        <option value="12">Dec</option>
+                                    <option disabled selected>Select</option>
+                                    <option value="Jan">Jan</option>
+                                    <option value="Feb">Feb</option>
+                                    <option value="Mar">Mar</option>
+                                    <option value="Apr">Apr</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">Jun</option>
+                                    <option value="Jul">Jul</option>
+                                    <option value="Aug">Aug</option>
+                                    <option value="Sep">Sep</option>
+                                    <option value="Oct">Oct</option>
+                                    <option value="Nov">Nov</option>
+                                    <option value="Dec">Dec</option>
                                 </select>
                             </div>
                         </div>
-                        <div id="form-container">
-                            <div class="col-xl-4">
-                                <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">FEES HEAD</label>
-                                <select class="form-select wide form-control" id="validationCustom05" required=""
-                                    name="fees_head">
-                                    <option value="0">Select</option>
-                                    <option value="2">Tuition fees</option>
-                                    <option value="5">Affiliation fees</option>
-                                    <option value="4">Library fees</option>
-                                    <option value="6">Celebration</option>
-                                    <option value="7">Computer fee</option>
-                                    <option value="8">Development fees</option>
-                                    <option value="9">Lamp Lighting fee</option>
-                                    <option value="10">Hostel Rent</option>
-                                    <option value="11">Bus fees</option>
-                                    <option value="12">Electricity</option>
-                                    <option value="13">Fooding </option>
-                                    <option value="14">Annual fees</option>
-                                    <option value="15">Hostel Rent 1st Month</option>
-                                    <option value="16">Celebration etc</option>
-                                </select>
-                            </div>
-                            <div class="col-xl-4">
-                                <div class="mb-3">
-                                    <label for="exampleFormControlInput2" class="form-label mb-2">AMOUNT</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput2" placeholder="Amount"
-                                        required name="amount">
-                                </div>
-                            </div>
-                            
-                            <div class="col-xl-4 mt-4">
-                                <button class="btn btn-primary" id="add_btn" onclick="addNewRow()">+ Add</button>
-                                <button class="btn btn-primary" id="delete_btn" onclick="addNewRow()"><i class="fa-solid fa-trash-can"></i></button>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>FEES HEAD</th>
+                                    <th>AMOUNT</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id='fees_tbody'>
+                                <tr>
+                                    <td>
+                                        <select class='form-select wide form-control' id='validationCustom05' required name='fees_head[]'>
+                                            <option >Select</option>
+                                            <?php
+                                                $sql ="SELECT * FROM fees_head WHERE status = 1";
+                                                $res = mysqli_query($conn, $sql);
+                                                while ($rows = mysqli_fetch_assoc($res)) {
+                                                    $title = $rows['title'];
+                                                    $id = $rows['id'];
+                                                   echo "<option value='".$id."'>".$title."</option>";
+                                                }
+                                            ?>
+                                        </select>
+                                    </td>
+                                    <td><input type='text' required name='amount[]' class='form-control total shadow-none'></td>
+                                    <td><input type='button' value='x' class='btn btn-danger btn-sm btn-row-remove shadow-none'> </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><input type='button' value='+ Add Row' class='btn btn-primary btn-sm'
+                                            id='btn-add-row'></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">LATE FINE DUE DATE</label>
+                                <input type="date" class="form-control" id="exampleFormControlInput2"
+                                    placeholder="Fine Date" value="<?php echo date('Y-m-d') ?>" required
+                                    name="late_due_date">
                             </div>
                         </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">LATE FINE AMOUNT</label>
+                                <input type="text" class="form-control" id="exampleFormControlInput2"
+                                    placeholder="LATE FINE AMOUNT" name="late_fine_amount">
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">TOTAL FEES</label>
+                                <input type="number" class="form-control" placeholder="TOTAL FEES"  name="total_fees" id='total_fees'>
+                            </div>
+                        </div>
+                        <center>
+                            <button type="submit" class="btn btn-primary" name="save">
+                                <i class="fa-regular fa-floppy-disk"></i> Save
+                            </button>
+                        </center>
                     </div>
-                    <center>
-                        <button type="submit" class="btn btn-primary" name="save">
-                            <i class="fa-regular fa-floppy-disk"></i> Save
-                        </button>
-                    </center>
                 </form>
             </div>
         </div>
@@ -301,31 +323,40 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
 
 
 <script>
-        function addNewRow() {
-            // Clone the existing form container
-            var formContainer = document.getElementById('form-container');
-            var clonedRow = formContainer.cloneNode(true);
+      $(document).ready(function(){
 
-            // Clear input values in the cloned row
-            var inputs = clonedRow.getElementsByTagName('input');
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].value = '';
+            $("#btn-add-row").click(function () {
+                var row = "<tr><td><select class='form-select wide form-control' id='validationCustom05' required name='fees_head[]'><?php $sql ="SELECT * FROM fees_head WHERE status = 1";  $res = mysqli_query($conn, $sql); while ($rows = mysqli_fetch_assoc($res)) { $title = $rows['title']; $id = $rows['id']; echo '<option value='.$id.'>'.$title.'</option>'; } ?></select></td><td><input type='number' required name='amount[]' class='form-control total'></td> <td><input type='button' value='x' class='btn btn-danger btn-sm btn-row-remove'> </td> </tr>";
+                $("#fees_tbody").append(row);
+            });
+
+            $("body").on("click", ".btn-row-remove", function () {
+                if (confirm("Are You Sure?")) {
+                    $(this).closest("tr").remove();
+                    grand_total();
+                }
+            });
+            
+            function grand_total() {
+                var tot = 0;
+                $(".total").each(function () {
+                    tot += Number($(this).val()) || 0;
+                });
+                $("#total_fees").val(tot);
+                console.log("Grand total updated: " + tot);
             }
+      });
 
-            // Append the cloned row to the container
-            formContainer.parentNode.appendChild(clonedRow);
-        }
-    </script>
+</script>
 
 <script>
-    
-// Year dropdown Script
-function getbatch(batch) {
-    $.ajax({
-        url: "load/get_year.php",
-        type: "POST",
-        data: { batch: batch },
-        console.log(batch);
+
+    // Year dropdown Script
+    function getbatch(batch) {
+        $.ajax({
+            url: "load/get_year.php",
+            type: "POST",
+            data: { batch: batch },
             dataType: "json",
             success: function (data) {
                 var yearDropdown = $("#year");
@@ -410,41 +441,55 @@ function getbatch(batch) {
 <?php
 // Insert Code
 if (isset($_POST['save'])) {
-    $title = $_POST['title'];
-    $sqlCheck = "SELECT * FROM monthly_fees WHERE title = ?";
-    $stmtCheck = $conn->prepare($sqlCheck);
-    $stmtCheck->bind_param("s", $title);
-    $stmtCheck->execute();
-    $resultCheck = $stmtCheck->get_result();
+    $batch_id = $_POST['batch_id'];
+    $year = $_POST['year'];
+    $month = $_POST['month'];
+    $late_due_date = $_POST['late_due_date'];
+    $late_fine_amount = $_POST['late_fine_amount'];
+    $total_fees = $_POST['total_fees'];
+    $added_by = 1;
+    $rows = [];
+    
 
-    if ($resultCheck->num_rows > 0) {
+    $sqlInsert = "INSERT INTO `monthly_fees`(`batch_id`, `year`, `month`, `late_fine_due_date`, `late_fine_amount`, `total_fees`, `added_by`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmtInsert = $conn->prepare($sqlInsert);
+    $stmtInsert->bind_param("iissssi", $batch_id, $year, $month, $late_due_date, $late_fine_amount, $total_fees, $added_by);
+    if ($stmtInsert->execute()) {
+
+        $sql = "INSERT INTO `monthly_fees_menu`(`batch_id`, `fees_head_id`, `amount`) VALUES (?, ?, ?)";
+$stmt = $conn->prepare($sql);
+
+for ($i = 0; $i < count($_POST['fees_head']); $i++) {
+    $fees_head = $_POST['fees_head'][$i];  // Use the value from the current iteration
+    $amount = $_POST['amount'][$i];  // Use the value from the current iteration
+
+    $stmt->bind_param("iis", $batch_id, $fees_head, $amount);
+
+    if ($stmt->execute()) {
+        // Continue with success handling if needed
+    } else {
         echo '<script>
-        swal("Error!", "Title already exists!", "error");
-        setTimeout(function(){
-            window.location.href =  window.location.href
-        }, 2000);
+            swal("Error!", "Error inserting data.", "error");
         </script>';
         exit;
-    } else {
-        $sqlInsert = "INSERT INTO `monthly_fees`(`title`, `status`, `added_by`) VALUES (?, '1', '1')";
-        $stmtInsert = $conn->prepare($sqlInsert);
-        $stmtInsert->bind_param("s", $title);
-        if ($stmtInsert->execute()) {
-            echo '<script>
-                swal("Success!", "", "success");
-                setTimeout(function(){
-                    window.location.href =  window.location.href
-                }, 1000);
-            </script>';
-            exit;
-        } else {
-            echo '<script>
-                swal("Error!", "Error inserting data.", "error");
-            </script>';
-        }
     }
 }
 
+// If you reach this point, all inserts were successful
+echo '<script>
+    swal("Success!", "", "success");
+    setTimeout(function(){
+        window.location.href = window.location.href;
+    }, 1000);
+</script>';
+exit;
+
+    } else {
+        echo '<script>
+            swal("Error!", "Error inserting data.", "error");
+        </script>';
+    }
+}
 // Update code
 if (isset($_POST['editSave'])) {
     $editId = $_POST['editId'];
