@@ -12,6 +12,7 @@ function getPageTitle() {
         'fees-head.php' => 'Fees Head Management Listing',
         'user.php' => 'User Management Listing',
         'monthly-fees.php' => 'Monthly Fees Management Listing',
+        'edit-monthly-fees.php' => 'Update Fees Management Listing',
         // Add more pages and their titles as needed
     );
 

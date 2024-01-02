@@ -66,7 +66,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sql = "SELECT * FROM `monthly_fees` INNER JOIN batches ON batches.id = monthly_fees.batch_id";
+                                    $sql = "SELECT monthly_fees.id AS id, monthly_fees.batch_id AS batch_id, batches.batches_name AS batches_name, monthly_fees.year AS year, monthly_fees.month AS month, monthly_fees.late_fine_due_date AS late_fine_due_date, monthly_fees.late_fine_amount AS late_fine_amount, monthly_fees.total_fees AS total_fees, monthly_fees.status AS status FROM `monthly_fees` INNER JOIN batches ON batches.id = monthly_fees.batch_id";
                                     $stmt = $conn->prepare($sql);
                                     if (!$stmt) {
                                         die("Error in SQL query: " . $conn->error);
@@ -139,10 +139,9 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                 </div>
                                             </td>
                                             <td>
-                                                <button type="button" class="edit btn btn-sm light btn-info"
-                                                    id="<?php echo $id; ?>">
+                                                <a href="edit-monthly-fees?id=<?php echo $id; ?>&batchId=<?php echo $batch_id; ?>&month=<?php echo $month; ?>" class="edit btn btn-sm light btn-info">
                                                     <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
+                                                </a>
                                                 <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
                                                     onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i></a>
                                             </td>
@@ -256,7 +255,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                 </tr>
                             </tfoot>
                         </table>
-
                         <div class="col-xl-4">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">LATE FINE DUE DATE</label>
@@ -291,36 +289,133 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-center">
+
+<div class="modal fade bd-example-modal-lg" id="EditModal" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="EditModal">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="EditModals">Edit Session</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Fees Management</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
             </div>
             <div class="modal-body">
                 <form action="" method="post">
-                    <input type="hidden" name="editId" id="editId">
                     <div class="row">
-                        <div class="col-xl-12">
+                        <div class="col-xl-4">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">TITLE</label>
-                                <input type="text" class="form-control" id="editTitle" placeholder="TITLE" required
-                                    name="editTitle">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
+                                <select class="form-select wide form-control" id="editBatch" onchange="getbatch(this.value)"
+                                    required="" name="batch_id">
+                                    <option disabled selected>Please select</option>
+                                    <?php
+                                    // Assuming $conn is your database connection
+                                    $sql = "SELECT * FROM batches";
+                                    $res = mysqli_query($conn, $sql);
+                                    while ($row = mysqli_fetch_assoc($res)) {
+                                        $batches_name = $row['batches_name'];
+                                        $id = $row['id'];
+                                        echo '<option value="' . $id . '">' . $batches_name . '</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">YEAR</label>
+                                <select class="form-select wide form-control" id="editYear" name="edityear">
+                                    <option disabled selected>Please select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">MONTH</label>
+                                <select class="form-select wide form-control" id="editMonth" required=""
+                                    name="editmonth">
+                                    <option disabled selected>Select</option>
+                                    <option value="Jan">Jan</option>
+                                    <option value="Feb">Feb</option>
+                                    <option value="Mar">Mar</option>
+                                    <option value="Apr">Apr</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">Jun</option>
+                                    <option value="Jul">Jul</option>
+                                    <option value="Aug">Aug</option>
+                                    <option value="Sep">Sep</option>
+                                    <option value="Oct">Oct</option>
+                                    <option value="Nov">Nov</option>
+                                    <option value="Dec">Dec</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table class='table table-bordered'>
+                            <thead>
+                                <tr>
+                                    <th>FEES HEAD</th>
+                                    <th>AMOUNT</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id='fees_tbody'>
+                                <tr>
+                                    <td>
+                                        <select class='form-select wide form-control' id='validationCustom05' required name='fees_head[]'>
+                                            <option >Select</option>
+                                            <?php
+                                                $sql ="SELECT * FROM fees_head WHERE status = 1";
+                                                $res = mysqli_query($conn, $sql);
+                                                while ($rows = mysqli_fetch_assoc($res)) {
+                                                    $title = $rows['title'];
+                                                    $id = $rows['id'];
+                                                   echo "<option value='".$id."'>".$title."</option>";
+                                                }
+                                            ?>
+                                        </select>
+                                    </td>
+                                    <td><input type='text' required name='amount[]' class='form-control total shadow-none'></td>
+                                    <td><input type='button' value='x' class='btn btn-danger btn-sm btn-row-remove shadow-none'> </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><input type='button' value='+ Add Row' class='btn btn-primary btn-sm'
+                                            id='btn-add-row'></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">LATE FINE DUE DATE</label>
+                                <input type="date" class="form-control" id="editLast_Due_Date"
+                                    placeholder="Fine Date" value="<?php echo date('Y-m-d') ?>" required
+                                    name="editlate_due_date">
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">LATE FINE AMOUNT</label>
+                                <input type="text" class="form-control" id="exampleFormControlInput2"
+                                    placeholder="LATE FINE AMOUNT" name="late_fine_amount">
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">TOTAL FEES</label>
+                                <input type="number" class="form-control" placeholder="TOTAL FEES"  name="total_fees" id='total_fees'>
+                            </div>
+                        </div>
+                        <center>
+                            <button type="submit" class="btn btn-primary" name="save">
+                                <i class="fa-regular fa-floppy-disk"></i> Save
+                            </button>
+                        </center>
                     </div>
-                    <center>
-                        <button type="submit" class="btn btn-primary" name="editSave">
-                            <i class="fa-regular fa-floppy-disk"></i> Save
-                        </button>
-                    </center>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <script>
       $(document).ready(function(){
@@ -372,16 +467,26 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     }
 
 
+    // Edit Script
     document.addEventListener('DOMContentLoaded', function () {
         const edits = document.getElementsByClassName('edit');
         Array.from(edits).forEach((element) => {
             element.addEventListener('click', function (e) {
                 const tr = e.target.closest('tr');
                 const id = tr.querySelector('td:nth-child(2)').innerText;
-                const title = tr.querySelector('td:nth-child(3)').innerText;
-                console.log(id, title);
+                const batch = tr.querySelector('td:nth-child(3)').innerText;
+                const year = tr.querySelector('td:nth-child(4)').innerText;
+                const month = tr.querySelector('td:nth-child(5)').innerText;
+                const last_due_date = tr.querySelector('td:nth-child(5)').innerText;
+                console.log(id, batch);
+                console.log(year);
+                console.log(month);
+                console.log(last_due_date);
                 document.getElementById('editId').value = id;
-                document.getElementById('editTitle').value = title;
+                document.getElementById('editBatch').value = batch;
+                document.getElementById('editYear').value = year;
+                document.getElementById('editMonth').value = month;
+                document.getElementById('editLast_Due_Date').value = last_due_date;
                 $('#EditModal').modal('show');
             });
         });

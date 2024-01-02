@@ -26,4 +26,7 @@
          Active / Deactive
          Delete
     Monthly-Fees Page:
+          Add Month Fees 
+          
+
     
