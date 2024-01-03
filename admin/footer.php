@@ -39,6 +39,18 @@
     <script src="js/custom.min.js"></script>
 	<script src="js/demo.js"></script>
     <script src="js/styleSwitcher.js"></script>
+
+	 <!-- pickdate -->
+	 <script src="vendor/pickadate/picker.js"></script>
+    <script src="vendor/pickadate/picker.time.js"></script>
+    <script src="vendor/pickadate/picker.date.js"></script>
+
+
+	   <!-- Pickdate -->
+	<script src="js/plugins-init/pickadate-init.js"></script>
+	<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>	
+	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
+
 	
 	
 </body>

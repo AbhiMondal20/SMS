@@ -30,6 +30,12 @@
 	<link rel="stylesheet" href="vendor/jquery-nice-select/css/nice-select.css">
 	<link href="vendor/datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
 	
+	<!-- Pick date -->
+    <link rel="stylesheet" href="vendor/pickadate/themes/default.css">
+    <link rel="stylesheet" href="vendor/pickadate/themes/default.date.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+	
 	 <link href="vendor/datatables/css/jquery.dataTables.min.css" rel="stylesheet">
 	<!--swiper-slider-->
 	<link rel="stylesheet" href="vendor/swiper/css/swiper-bundle.min.css">
@@ -38,12 +44,13 @@
     <link href="css/style.css" rel="stylesheet">
 
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert 2 library -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<?php
+
 		date_default_timezone_set("Asia/Calcutta"); 
 	?>
 </head>
