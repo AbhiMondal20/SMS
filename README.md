@@ -26,7 +26,11 @@
          Active / Deactive
          Delete
     Monthly-Fees Page:
-          Add Month Fees 
+          Add Month Fees (in total fees some bugs showing)
+          Active / Deactive
+          Delete 
+          Edit page Pending 
+
           
 
     

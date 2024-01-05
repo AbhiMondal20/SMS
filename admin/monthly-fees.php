@@ -151,7 +151,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['month']) 
                                                     <input class="form-check-input" type="checkbox" role="switch" <?php if ($status == '1') {
                                                         echo "checked";
                                                     } ?> id="flexSwitchCheckChecked"
-                                                        onclick="toggleStatus(<?php echo $id; ?>)">
+                                                        onclick="toggleStatus(<?php echo $fees_id; ?>)">
                                                 </div>
                                             </td>
                                             <td>
@@ -303,7 +303,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['month']) 
         </div>
     </div>
 </div>
-
 <!-- Edit Modal -->
 
 <div class="modal fade bd-example-modal-lg" id="EditModal" tabindex="-1" role="dialog" aria-hidden="true"
@@ -450,6 +449,15 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['month']) 
             } ?></select></td><td><input type='number' required name='amount[]' class='form-control total'></td> <td><input type='button' value='x' class='btn btn-danger btn-sm btn-row-remove'> </td> </tr>";
             $("#fees_tbody").append(row);
         });
+    
+        function grand_total() {
+            var tot = 0;
+            $(".total").each(function () {
+                tot += Number($(this).val()) || 0;
+                $("#total_fees").val(tot);
+            });
+            console.log("Grand total updated: " + tot);
+        }
 
         $("body").on("click", ".btn-row-remove", function () {
             if (confirm("Are You Sure?")) {
@@ -457,15 +465,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['month']) 
                 grand_total();
             }
         });
-
-        function grand_total() {
-            var tot = 0;
-            $(".total").each(function () {
-                tot += Number($(this).val()) || 0;
-            });
-            $("#total_fees").val(tot);
-            console.log("Grand total updated: " + tot);
-        }
     });
 
 </script>
@@ -575,7 +574,6 @@ if (isset($_POST['save'])) {
     $total_fees = $_POST['total_fees'];
     $added_by = 1;
     $rows = [];
-
 
     $sqlInsert = "INSERT INTO `monthly_fees`(`batch_id`, `year`, `month`, `late_fine_due_date`, `late_fine_amount`, `total_fees`, `added_by`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmtInsert = $conn->prepare($sqlInsert);

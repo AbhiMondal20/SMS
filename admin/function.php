@@ -13,6 +13,8 @@ function getPageTitle() {
         'user.php' => 'User Management Listing',
         'monthly-fees.php' => 'Monthly Fees Management Listing',
         'edit-monthly-fees.php' => 'Update Fees Management Listing',
+        'counter-collection.php' => 'Counter Collection',
+        'student.php' => 'Manage Student',
         // Add more pages and their titles as needed
     );
 
