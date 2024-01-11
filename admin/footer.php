@@ -1,6 +1,6 @@
 <div class="footer footer-outer">
 			<div class="copyright">
-				<p>Copyright © Powered by <a href="https://abhitechbot.com/" target="_blank">Abhitechbot</a> 2023</p>
+				<p>Copyright © Powered by <a href="https://abhitechbot.com/" target="_blank">Abhitechbot</a> <?php echo date('Y'); ?></p>
 			</div>
 		</div>
 
@@ -45,12 +45,12 @@
     <script src="vendor/pickadate/picker.time.js"></script>
     <script src="vendor/pickadate/picker.date.js"></script>
 
-
 	   <!-- Pickdate -->
 	<script src="js/plugins-init/pickadate-init.js"></script>
 	<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>	
 	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-
+	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
+	<script src="vendor/dropzone/dist/dropzone.js"></script>
 	
 	
 </body>

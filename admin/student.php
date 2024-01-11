@@ -57,46 +57,58 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                         <th>#</th>
                                         <th>Addmission Id</th>
                                         <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Mobile</th>
+                                        <th>Batch</th>
+                                        <th>Mobile (Login)</th>
+                                        <th>Father's Name</th>
                                         <th>Status</th>
+                                        <th>upload Document</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $sql = "SELECT * FROM student";
+                                    $sql = "SELECT student.id AS id, student.stu_id AS stu_id, student.batch_id AS batch_id, student.name AS name, student.mobile AS mobile, student.status AS status, student.f_name AS f_name, student.m_name AS m_name, batches.batches_name AS batches_name FROM student INNER JOIN batches ON student.batch_id = batches.id";
                                     $stmt = $conn->prepare($sql);
                                     $stmt->execute();
                                     $result = $stmt->get_result();
                                     $sno = 0;
                                     while ($row = $result->fetch_assoc()) {
                                         $id = $row['id'];
+                                        $stu_id = $row['stu_id'];
+                                        $batch = $row['batch_id'];
+                                        $batches_name = $row['batches_name'];
                                         $name = $row['name'];
-                                        $email = $row['email'];
                                         $mobile = $row['mobile'];
                                         $status = $row['status'];
+                                        $f_name = $row['f_name'];
+                                        $m_name = $row['m_name'];
                                         $sno += 1;
                                         ?>
                                         <tr>
                                             <td>
                                                 <?php echo $sno; ?>
                                             </td>
-                                            <td style="display:none">
+                                            <td  style="display:none">
                                                 <?php echo $id; ?>
                                             </td>
                                             <td>
                                                 <div class="trans-list">
                                                     <h4>
-                                                        <?php echo $session; ?>
+                                                        <?php echo $stu_id; ?>
                                                     </h4>
                                                 </div>
                                             </td>
                                             <td>
-                                                <?php echo $prefix; ?>
+                                                <?php echo $name; ?>
                                             </td>
                                             <td>
-                                                <?php echo $description; ?>
+                                                <?php echo $batches_name; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $mobile; ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $f_name; ?>
                                             </td>
                                             <td>
                                                 <div class="form-check form-switch">
@@ -107,12 +119,12 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                 </div>
                                             </td>
                                             <td>
-                                                <button type="button" class="edit btn btn-sm light btn-info"
-                                                    id="<?php echo $id; ?>"><i
-                                                        class="fa-solid fa-pen-to-square"></i></button>
-                                                <a href="javascript:void()" class="delete btn btn-sm light btn-danger"
-                                                    onclick="confirmDelete();"><i class="fa-solid fa-trash-can"></i></a>
-                                                <a href="javascript:void()" class=" btn btn-sm light btn-danger"><i class="fa-solid fa-file-arrow-up"></i></a>
+                                                <a href="student-upload-document?id=<?php echo $id; ?>&addmission_id=<?php echo $stu_id; ?>" class=" btn btn-sm light btn-danger"><i class="fa-solid fa-file-arrow-up"></i></a>
+                                            </td>
+                                            <td>
+                                                <a href="edit-student?id=<?php echo $id; ?>&addmission_id=<?php echo $stu_id; ?>" class="edit btn btn-sm light btn-info" id="<?php echo $id; ?>"><i class="fa-solid fa-pen-to-square"></i></a>
+
+                                                <a href="javascript:void(0)" class="delete btn btn-sm light btn-danger" onclick="return confirmDelete(<?php echo $id; ?>);"><i class="fa-solid fa-trash-can"></i></a>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -130,42 +142,163 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 <!-- Add Modal -->
-<div class="modal fade" id="StudentModal" tabindex="-1" aria-labelledby="StudentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-center">
+<div class="modal fade bd-example-modal-lg" id="StudentModal" tabindex="-1" aria-labelledby="StudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="StudentModalLabel">Student Manage</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
                     <div class="row">
-                        <div class="col-xl-6">
-                            <div class="mb-3">
-                                <label for="exampleFormControlInput1" class="form-label mb-2">SESSION</label>
-                                <input type="text" class="form-control" required id="exampleFormControlInput1"
-                                    placeholder="SESSION" name="session">
-                            </div>
+                    <div class="col-xl-6">
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label mb-2">Student Id</label>
+                            <?php
+                                $sql = 'SELECT * FROM student ORDER BY id DESC LIMIT 1';
+                                $res = mysqli_query($conn, $sql);
+
+                                if (!$res) {
+                                    echo "Error fetching student ID: " . mysqli_error($conn);
+                                    // Handle the error appropriately, perhaps redirect or show a user-friendly message.
+                                } else {
+                                    $row = mysqli_fetch_assoc($res);
+                                    $last_id = $row['stu_id'];
+
+                                    if ($last_id == '') {
+                                        $stu_id = "ATT001";
+                                    } else {
+                                        $stu_id = substr($last_id, 3);
+                                        $stu_id = intval($stu_id);
+                                        $stu_id = "ATT" . str_pad(($stu_id + 1), 3, '0', STR_PAD_LEFT);
+                                    }
+                                    ?>
+                                    <input type="text" class="form-control" required name="stu_id" value="<?php echo $stu_id; ?>" readonly>
+                                <?php
+                                }
+                            ?>
                         </div>
+                    </div>
+
                         <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">PREFIX</label>
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Name</label>
                                 <input type="text" class="form-control" id="exampleFormControlInput2"
-                                    placeholder="SESSION PREFIX" required name="session_prefix">
+                                    placeholder="Student Name" required name="name">
                             </div>
                         </div>
-                        <div class="col-xl-12">
+                        <div class="col-xl-6">
                             <div class="mb-3">
-                                <label for="exampleFormControlInput5" class="form-label mb-2">SESSION
-                                    DESCRIPTION</label>
-                                <textarea type="number" class="form-control" id="exampleFormControlInput5"
-                                    placeholder="SESSION DESCRIPTION" name="session_des"></textarea>
+                                <label for="exampleFormControlInput2" class="form-label mb-2">BATCH</label>
+                                <select class="form-select wide form-control" id="batch" onchange="updateYearOptions()"
+                                    required="" name="batch_id">
+                                    <option value="" disabled selected>Select Batch</option>
+                                    <?php
+                                        $sql = "SELECT * FROM batches";
+                                        $res = mysqli_query($conn, $sql);
+                                        while ($row = mysqli_fetch_assoc($res)) {
+                                            $batchId = $row['id'];
+                                            $batchesName = $row['batches_name'];
+                                            echo '<option value="' . $batchId . '">' . $batchesName . '</option>';
+                                        }
+                                    ?>
+                                </select> 
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Profile Pic</label>
+                                <input type="file" class="form-control"  name="file" id="file" accept=".png, .webp">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Age</label>
+                                <input type="text" class="form-control" required name="age" placeholder="Age">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Gender</label>
+                                <select class="form-select wide form-control" id="validationCustom05" required=""
+                                    name="gender">
+                                    <option selected="" disabled="" value="">Please select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Mobile</label>
+                                <input type="tel" class="form-control" required name="mobile" placeholder="Mobile" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Email</label>
+                                <input type="email" class="form-control" required name="email" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Father Name</label>
+                                <input type="text" class="form-control" required name="f_name" placeholder="Father Name">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Mother Name</label>
+                                <input type="text" class="form-control" required name="m_name" placeholder="Mother Name">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Father Mobile</label>
+                                <input type="tel" class="form-control" required name="f_mobile" placeholder="Father Mobile" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Mother Mobile</label>
+                                <input type="tel" class="form-control" required name="m_mobile" placeholder="Mother Mobile" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">State</label>
+                                <input type="text" class="form-control" required name="state" placeholder="State">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Village</label>
+                                <input type="text" class="form-control" required name="vill" placeholder="Village">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Police Station</label>
+                                <input type="text" class="form-control" required name="ps" placeholder="Police Station">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Post Office</label>
+                                <input type="text" class="form-control" required name="po" placeholder="Post Office">
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput2" class="form-label mb-2">Pin Code</label>
+                                <input type="text" class="form-control" required name="pin" maxlength="6" minlength="6" placeholder="Pin Code">
                             </div>
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save"><i
-                                class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="save">
+                            <i class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
@@ -173,72 +306,9 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
     </div>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-center">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="EditModals">Edit Session</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="" method="post">
-                <input type="hidden" name="editId" id="editId">
-                    <div class="row">
-                        <div class="col-xl-6">
-                            <div class="mb-3">
-                                <label for="exampleFormControlInput1" class="form-label mb-2">SESSION</label>
-                                <input type="text" class="form-control" required id="editSession"
-                                    placeholder="SESSION" name="editSession">
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <div class="mb-3">
-                                <label for="exampleFormControlInput2" class="form-label mb-2">PREFIX</label>
-                                <input type="text" class="form-control" id="editSession_prefix"
-                                    placeholder="SESSION PREFIX" required name="editSession_prefix">
-                            </div>
-                        </div>
-                        <div class="col-xl-12">
-                            <div class="mb-3">
-                                <label for="exampleFormControlInput5" class="form-label mb-2">SESSION
-                                    DESCRIPTION</label>
-                                <textarea type="number" class="form-control" id="editSession_des"
-                                    placeholder="SESSION DESCRIPTION" name="editSession_des"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <center>
-                        <button type="submit" class="btn btn-primary" name="editSave"><i
-                                class="fa-regular fa-floppy-disk"></i> Save</button>
-                    </center>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const edits = document.getElementsByClassName('edit');
-        Array.from(edits).forEach((element) => {
-            element.addEventListener('click', function (e) {
-                const tr = e.target.closest('tr');
-                const id = tr.querySelector('td:nth-child(2)').innerText;
-                const session = tr.querySelector('td:nth-child(3)').innerText;
-                const session_prefix = tr.querySelector('td:nth-child(4)').innerText;
-                const session_des = tr.querySelector('td:nth-child(5)').innerText;
-                // console.log(session);
-                document.getElementById('editId').value = id;
-                document.getElementById('editSession').value = session;
-                document.getElementById('editSession_prefix').value = session_prefix;
-                document.getElementById('editSession_des').value = session_des;
-                $('#EditModal').modal('show');
-            });
-        });
-    });
-
     // Delete Script
-    function confirmDelete() {
+    function confirmDelete(id) {
         Swal.fire({
             title: 'Are you sure?',
             text: 'You will not be able to recover this session!',
@@ -249,12 +319,13 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "?id=<?php echo $id; ?>&type=delete";
+                window.location.href = "?id=" + id + "&type=delete";
             }
         });
+        return false;
     }
 
-    // Status
+    // Status script
     function toggleStatus(id) {
         var id = id;
         swal({
@@ -262,14 +333,14 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
             text: "Do you want to Change the Session status?",
             icon: "warning",
             buttons: {
-                cancel: "Cancel", // Rename the Cancel button
-                confirm: "OK"     // Rename the OK button
+                cancel: "Cancel",
+                confirm: "OK"
             },
             dangerMode: true,
         }).then((confirmed) => {
             if (confirmed) {
                 $.ajax({
-                    url: "load/session_update_status.php",
+                    url: "load/student_update_status.php",
                     type: "post",
                     data: { chatId: id },
                     success: function (result) {
@@ -280,42 +351,107 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         });
     }
 
+
+// File filtering script
+    const fileInput = document.getElementById('file');
+    fileInput.addEventListener('change', () => {
+        const allowedExtensions = /(\.png|\.webp)$/i;
+        const maxSizeMB = 2;
+        const fileSizeMB = fileInput.files[0].size / (1024 * 1024);
+        const fileName = fileInput.value;
+        if (!allowedExtensions.exec(fileName)) {
+            swal({
+                title: 'Invalid!',
+                text: 'Invalid file format. Only WEBP and PNG files are allowed.',
+                icon: 'error',
+                button: 'Ok',
+            });
+            fileInput.value = '';
+            return false;
+        } else if (fileSizeMB > maxSizeMB) {
+            swal({
+                title: 'Invalid!',
+                text: 'Images size exceeds the maximum allowed size of 2 MB.',
+                icon: 'error',
+                button: 'Ok',
+            });
+            fileInput.value = '';
+            return false;
+        }
+    });
+
 </script>
 
 <?php
 // Insert Code
 if (isset($_POST['save'])) {
-    $session = $_POST['session'];
-    $session_des = $_POST['session_des'];
-    $session_prefix = $_POST['session_prefix'];
+    $stu_id = $_POST['stu_id'];
+    $name = $_POST['name'];
+    $batch_id = $_POST['batch_id'];
+    $email = $_POST['email'];
+    $gender = $_POST['gender'];
+    $age = $_POST['age'];
+    $mobile = $_POST['mobile'];
+    $f_name = $_POST['f_name'];
+    $m_name = $_POST['m_name'];
+    $f_mobile = $_POST['f_mobile'];
+    $m_mobile = $_POST['m_mobile'];
+    $state = $_POST['state'];
+    $vill = $_POST['vill'];
+    $ps = $_POST['ps'];
+    $po = $_POST['po'];
+    $pin = $_POST['pin'];
+    $admin_id = 1;
+    
+    // File upload handling for main image
+    $tmp_dir = './upload/';
+    $img_loc = $_FILES['file']['tmp_name'];
+    $img_name = $_FILES['file']['name'];
+    $thambname = uniqid();
+    $img_ext = pathinfo($img_name, PATHINFO_EXTENSION);
 
-    $sqlCheck = "SELECT * FROM session WHERE session = ?";
+    $img_size = $_FILES['file']['size'] / (1024 * 1024);
+    $img_dir = $tmp_dir . $thambname . "." . $img_ext;
+    move_uploaded_file($img_loc, $img_dir);
+
+    $img_upload = 'upload/' . $thambname . "." . $img_ext;
+    if ($img_size > 5) {
+        echo "<script>alert('image size is greater than 5 MB')</script>";
+        exit();
+    }
+
+    $sqlCheck = "SELECT * FROM student WHERE stu_id = ?";
     $stmtCheck = $conn->prepare($sqlCheck);
-    $stmtCheck->bind_param("s", $session);
+    $stmtCheck->bind_param("s", $stu_id);
     $stmtCheck->execute();
     $resultCheck = $stmtCheck->get_result();
 
     if ($resultCheck->num_rows > 0) {
         echo '<script>
-        swal("Error!", "Session already exists!", "error");
+        swal("Error!", "Addmission Id already exists!", "error");
         setTimeout(function(){
             window.location.href =  window.location.href
         }, 2000);
         </script>';
         exit;
     } else {
-        // Use a different variable for the second prepared statement
-        $sqlInsert = "INSERT INTO `session`(`session`, `prefix`, `description`, `added_by`) VALUES (?,?,?,'1')";
+        $sqlInsert = "INSERT INTO `student`(`stu_id`, `name`, `batch_id`, `img`, `f_name`, `m_name`, `age`, `gender`, `mobile`, `email`, `f_mobile`, `m_mobile`, `po`, `ps`, `vill`, `dist`, `state`, `pin`, `address`, `added_by`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtInsert = $conn->prepare($sqlInsert);
-        $stmtInsert->bind_param("sss", $session, $session_prefix, $session_des);
+        $stmtInsert->bind_param("ssssssssssssssssssss", $stu_id, $name, $batch_id, $img_upload, $f_name, $m_name, $age, $gender, $mobile, $email, $f_mobile, $m_mobile, $po, $ps, $vill, $dist, $state, $pin, $addre, $admin_id);
+
         if ($stmtInsert->execute()) {
-            echo '<script>
-                swal("Success!", "", "success");
-                setTimeout(function(){
-                    window.location.href =  window.location.href
-                }, 1000);
-            </script>';
-            exit;
+                $sqlInsert = "INSERT INTO `student_upload_document`(`stu_id`) VALUES (?)";
+                $stmtInsert = $conn->prepare($sqlInsert);
+                $stmtInsert->bind_param("s", $stu_id);
+                if ($stmtInsert->execute()) {
+                        echo '<script>
+                                swal("Success!", "", "success");
+                                setTimeout(function(){
+                                    window.location.href =  window.location.href
+                                }, 1000);
+                            </script>';
+                    exit;
+                }
         } else {
             echo '<script>
                 swal("Error!", "Error inserting data.", "error");

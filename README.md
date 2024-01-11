@@ -31,6 +31,16 @@
           Delete 
           Edit page Pending 
 
-          
+     Student:
+       Add new student
+       Active / Deactive
+       Delete
+       Update student 
+     
+     Update Student Page:
+          Done
+
+     Student Upload Document
+        also done👍 but some updated issue 
 
     

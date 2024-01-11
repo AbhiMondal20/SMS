@@ -43,6 +43,10 @@
 	<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
+	<link href="vendor/dropzone/dist/dropzone.css" rel="stylesheet">
+	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
+	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+	
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert 2 library -->

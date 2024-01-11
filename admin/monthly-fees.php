@@ -195,7 +195,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['month']) 
                                     required="" name="batch_id">
                                     <option value="" disabled selected>Select Batch</option>
                                     <?php
-                                    // Assuming $conn is your database connection
                                     $sql = "SELECT * FROM batches";
                                     $res = mysqli_query($conn, $sql);
                                     while ($row = mysqli_fetch_assoc($res)) {

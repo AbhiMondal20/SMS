@@ -15,6 +15,8 @@ function getPageTitle() {
         'edit-monthly-fees.php' => 'Update Fees Management Listing',
         'counter-collection.php' => 'Counter Collection',
         'student.php' => 'Manage Student',
+        'edit-student.php' => 'Update Student Manage',
+        'student-upload-document.php' => 'Student Document',
         // Add more pages and their titles as needed
     );
 
