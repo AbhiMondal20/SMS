@@ -38,9 +38,10 @@
        Update student 
      
      Update Student Page:
-          Done
+          Done 👍
 
-     Student Upload Document
-        also done👍 but some updated issue 
+     Student Upload Document:
+        also done👍 but some updated issue
+
 
     
