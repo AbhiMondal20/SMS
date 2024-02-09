@@ -1,6 +1,6 @@
 <?php
 
-$dbname = "sms";
+$dbname = "akademi";
 $dbuser = "root";
 $dbpass = "";
 $dbhost = "localhost";

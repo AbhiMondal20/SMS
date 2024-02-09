@@ -1,6 +1,13 @@
 <?php
-include('header.php');
+session_start();
+	if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+		// $user_email = $_SESSION['user_email'];
+	}
+	else{
+		echo "<script>location.href='../login';</script>";
+	}
 
+include('header.php');
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
     $id = $_GET['id'];
     $sql2 = "DELETE FROM `batches` WHERE id = ?";
@@ -149,6 +156,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         ***********************************-->
     </div>
 </div>
+
 <!-- Add Modal -->
 <div class="modal fade" id="BatchesModal" tabindex="-1" aria-labelledby="BatchesModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
@@ -167,15 +175,15 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     <select class="form-select wide form-control" id="validationCustom05" required=""
                                         name="session_id">
                                         <option selected="" disabled="" value="">Please select</option>
-                                        <?php
-                                        $sql = "SELECT * FROM session WHERE status = 1";
-                                        $res = mysqli_query($conn, $sql);
-                                        while ($row = mysqli_fetch_assoc($res)) {
-                                            $session_id = $row['id'];
-                                            $session = $row['session'];
-                                            echo '<option value="' . $session_id . '">' . $session . '</option>';
-                                        }
-                                        ?>
+                                            <?php
+                                            $sql = "SELECT * FROM session WHERE status = 1";
+                                            $res = mysqli_query($conn, $sql);
+                                            while ($row = mysqli_fetch_assoc($res)) {
+                                                $session_id = $row['id'];
+                                                $session = $row['session'];
+                                                echo '<option value="' . $session_id . '">' . $session . '</option>';
+                                            }
+                                            ?>
                                     </select>
                                 </div>
                             </div>
@@ -191,9 +199,9 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                         $sql = "SELECT * FROM courses WHERE status = 1";
                                         $res = mysqli_query($conn, $sql);
                                         while ($row = mysqli_fetch_assoc($res)) {
-                                            $session_id = $row['id'];
+                                            $courses_id = $row['id'];
                                             $courses = $row['courses'];
-                                            echo '<option value="' . $session_id . '">' . $courses . '</option>';
+                                            echo '<option value="' . $courses_id . '">' . $courses . '</option>';
                                         }
                                         ?>
                                     </select>
@@ -249,6 +257,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
         </div>
     </div>
 </div>
+
 <!-- Edit Modal -->
 <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-center">
@@ -350,8 +359,10 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                 </form>
             </div>
         </div>
+        </div>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const edits = document.getElementsByClassName('edit');
@@ -441,6 +452,7 @@ if (isset($_POST['save'])) {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $batche_desc = $_POST['batche_desc'];
+
     $sqlCheck = "SELECT * FROM batches WHERE batches_name = ?";
     $stmtCheck = $conn->prepare($sqlCheck);
     $stmtCheck->bind_param("s", $batches_name);
@@ -461,11 +473,11 @@ if (isset($_POST['save'])) {
         $stmtInsert->bind_param("iisisss", $session_id, $course_id, $batches_name, $no_student, $start_date, $end_date, $batche_desc);
         if ($stmtInsert->execute()) {
             echo '<script>
-                swal("Success!", "", "success");
-                setTimeout(function(){
-                    window.location.href =  window.location.href
-                }, 1000);
-            </script>';
+                    swal("Success!", "", "success");
+                    setTimeout(function(){
+                        window.location.href =  window.location.href
+                    }, 1000);
+                </script>';
             exit;
         } else {
             echo '<script>
@@ -474,6 +486,8 @@ if (isset($_POST['save'])) {
         }
     }
 }
+
+
 // Update code
 if (isset($_POST['editSave'])) {
     $editId = $_POST['editId'];
@@ -513,5 +527,5 @@ if (isset($_POST['editSave'])) {
 }
 ?>
 <?php
-include('footer.php');
+    include('footer.php');
 ?>

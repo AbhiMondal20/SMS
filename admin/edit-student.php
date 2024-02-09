@@ -1,4 +1,11 @@
 <?php
+session_start();
+if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+    // $user_email = $_SESSION['user_email'];
+}
+else{
+    echo "<script>location.href='../login';</script>";
+}
 include('header.php');
 
 $id = $_GET['id'];

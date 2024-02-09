@@ -1,6 +1,6 @@
 <div class="footer footer-outer">
 			<div class="copyright">
-				<p>Copyright © Powered by <a href="https://abhitechbot.com/" target="_blank">Abhitechbot</a> <?php echo date('Y'); ?></p>
+				<p>Copyright © Powered by <a href="https://abhitechbot.in/" target="_blank">Abhitechbot</a> <?php echo date('Y'); ?></p>
 			</div>
 		</div>
 
@@ -49,9 +49,11 @@
 	<script src="js/plugins-init/pickadate-init.js"></script>
 	<script src="vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>	
 	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
 	<script src="vendor/dropzone/dist/dropzone.js"></script>
 	
 	
+    <!-- code-highlight -->
+	<script src="js/highlight.min.js"></script>
+
 </body>
 </html>

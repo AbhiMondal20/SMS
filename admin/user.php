@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+    // $user_email = $_SESSION['user_email'];
+}
+else{
+    echo "<script>location.href='../login';</script>";
+}
 include 'header.php';
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
     $id = $_GET['id'];
@@ -258,6 +266,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                 </form>
             </div>
         </div>
+    </div>
     </div>
 </div>
 

@@ -1,4 +1,11 @@
 <?php
+session_start();
+if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+    // $user_email = $_SESSION['user_email'];
+}
+else{
+    echo "<script>location.href='../login';</script>";
+}
 include('header.php');
 
 if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && $_GET['id'] > 0) {
@@ -74,7 +81,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                         </thead>
 														<tbody>
                                                         <?php
-                                        $sql = "SELECT student.id AS id, student.stu_id AS stu_id, student.batch_id AS batch_id, student.name AS name, student.mobile AS mobile, student.img = img, student.status AS status, student.f_name AS f_name, student.m_name AS m_name, batches.batches_name AS batches_name FROM student INNER JOIN batches ON student.batch_id = batches.id ";
+                                        $sql = "SELECT student.id AS id, student.stu_id AS stu_id, student.batch_id AS batch_id, student.name AS name, student.mobile AS mobile, student.img AS img, student.status AS status, student.f_name AS f_name, student.m_name AS m_name, batches.batches_name AS batches_name FROM student INNER JOIN batches ON student.batch_id = batches.id ";
                                         $stmt = $conn->prepare($sql);
                                         $stmt->execute();
                                         $result = $stmt->get_result();
@@ -89,6 +96,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                 $status = $row['status'];
                                                 $f_name = $row['f_name'];
                                                 $m_name = $row['m_name'];
+                                                $img = $row['img'];
                                                 $sno += 1;
                                             ?>
 
@@ -97,7 +105,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                         <?php echo $id; ?>
                                                     </td>
                                                 
-                                                    <td><img class="rounded-circle" width="35" src="images/profile/small/pic1.jpg" alt=""></td>
+                                                    <td><img class="rounded-circle" width="35" src="<?php echo $img; ?>" alt=""></td>
                                                     <td><?php echo $stu_id; ?></td>
                                                     <td><?php echo $name; ?></td>
                                                     <td><?php echo $batches_name; ?></td>
@@ -460,13 +468,15 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                 $stmtInsert = $conn->prepare($sqlInsert);
                 $stmtInsert->bind_param("s", $stu_id);
                 if ($stmtInsert->execute()) {
+                    if ($stmtInsert->execute()) {
                     echo '<script>
                                 swal("Success!", "", "success");
                                 setTimeout(function(){
-                                    window.location.href =  window.location.href
+                                    window.location.href = "counter-collection?stu_id='.$stu_id.'&date='.date('Y-m-d').'&search=Search"
                                 }, 1000);
                             </script>';
                     exit;
+                    }
                 }
             } else {
                 echo '<script>

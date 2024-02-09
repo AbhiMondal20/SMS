@@ -45,8 +45,7 @@
 
 	<link href="vendor/dropzone/dist/dropzone.css" rel="stylesheet">
 	<link href="vendor/jquery-nice-select/css/nice-select.css" rel="stylesheet">
-	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
-	
+	<link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">	
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert 2 library -->
@@ -72,7 +71,6 @@
 			  <div class="dot"></div>
 			  <div class="dot"></div>
 		</div>
-			
 		</div>
 	</div>
     <!--*******************
@@ -337,7 +335,7 @@
 
 											</div>
 											<div class="card-footer text-center p-3">
-												<a href="page-login" class="dropdown-item ai-icon btn btn-primary light">
+												<a href="../logout" class="dropdown-item ai-icon btn btn-primary light">
 													<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
 													<span class="ms-2 text-primary">Logout </span>
 												</a>
