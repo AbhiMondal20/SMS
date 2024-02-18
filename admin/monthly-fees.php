@@ -611,6 +611,8 @@ if (isset($_POST['save'])) {
             </script>';
         exit;
 
+        
+
     } else {
         echo '<script>
             swal("Error!", "Error inserting data.", "error");

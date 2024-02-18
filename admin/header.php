@@ -1,7 +1,38 @@
 <?php
 	include('../db_conn.php');
 	include('function.php');
+
+	$sql = "SELECT * FROM `site_info`";
+	$res = mysqli_query($conn, $sql);
+	while ($row = mysqli_fetch_assoc($res)) {
+		$id = $row['id'];
+		$site_name = $row['site_name'];
+		$site_url = $row['site_url'];
+		$logo = $row['logo'];
+		$fav_icon = $row['fav_icon'];
+		$address = $row['address'];
+		$phone = $row['phone'];
+	}
+	$sql = "SELECT * FROM `user`";
+	$res = mysqli_query($conn, $sql);
+	while ($row = mysqli_fetch_assoc($res)) {
+		$id = $row['id'];
+		$user_name = $row['name'];
+		$role = $row['role'];
+	}
 ?>
+<style>
+    @media print {
+        .content_hide {
+            display: none;
+        }
+    }
+</style>
+<script>
+	function printPage() {
+		window.print();
+	}
+</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +51,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Page Title Here -->
-	<title>Akademi - <?php echo getPageTitle(); ?></title>
+	<title><?php echo $site_name; ?> - <?php echo getPageTitle(); ?></title>
 
 <!-- FAVICONS ICON -->
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png" >
@@ -62,7 +93,7 @@
     <!--*******************
         Preloader start
     ********************-->
-	<div id="preloader">
+	<div id="preloader21" class="content_hide">
 	  <div class="loader">
 		<div class="dots">
 			  <div class="dot mainDot"></div>
@@ -84,8 +115,8 @@
         <!--**********************************
             Nav header start
         ***********************************-->
-        <div class="nav-header">
-            <a href="index-2" class="brand-logo">
+        <div class="nav-header content_hide">
+            <a href="#" class="brand-logo">
 				<svg class="logo-abbr" width="40" height="40" viewBox="0 0 48 54" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<rect y="3" width="48" height="48" rx="16" fill="#FB7D5B"/>
 					<path d="M28.964 35.536H19.532L18.02 40H11.576L20.72 14.728H27.848L36.992 40H30.476L28.964 35.536ZM27.38 30.784L24.248 21.532L21.152 30.784H27.38Z" fill="white"/>
@@ -122,7 +153,7 @@
 		<!--**********************************
             Header start
         ***********************************-->
-		<div class="header">
+		<div class="header content_hide">
             <div class="header-content">
                 <nav class="navbar navbar-expand">
                     <div class="collapse navbar-collapse justify-content-between">
@@ -151,12 +182,10 @@
 													 <svg id="icon-full" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" style="stroke-dasharray: 37, 57; stroke-dashoffset: 0;"></path></svg>
 													 <svg id="icon-minimize" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="A098AE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minimize"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" style="stroke-dasharray: 37, 57; stroke-dashoffset: 0;"></path></svg>
 												  </a>
-												</li>
-																
+												</li>		
 											</ul>
 										</div>
 									</div>
-								
 								</div>
 						</li>
 							<li class="nav-item dropdown notification_dropdown">
@@ -276,7 +305,8 @@
 											<div class="d-flex align-items-center sidebar-info">
 												
 											</div>
-											<img src="images/user.jpg" alt="">
+											<!-- <img src="images/user.jpg" alt=""> -->
+											<img class="rounded-circle" width="35" src="images/user1.png" alt="Male Student">
 										</div>
 									</a>
 									<div class="dropdown-menu dropdown-menu-end pb-0" style="">
@@ -284,11 +314,11 @@
 											<div class="card-header p-3">
 												<ul class="d-flex align-items-center">
 													<li>
-														<img src="images/user.jpg" class="ms-0" alt="">
+														<img class="rounded-circle" width="35" src="images/user1.png" alt="Male Student">
 													</li>
 													<li class="ms-2">
-														<h4 class="mb-0">Nella Vita</h4>
-														<span>Admin</span>
+														<h4 class="mb-0"><?php echo $user_name; ?></h4>
+														<span><?php echo $role; ?></span>
 													</li>
 												</ul>
 											</div>
@@ -322,7 +352,7 @@
 													</svg>
 													<span class="ms-2">Notification </span>
 												</a>
-												<a href="javascript:void(0);" class="dropdown-item ai-icon ">
+												<a href="site-info" class="dropdown-item ai-icon ">
 													<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
 														<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 															<rect x="0" y="0" width="24" height="24"/>
@@ -332,11 +362,9 @@
 													</svg>
 													<span class="ms-2">Settings </span>
 												</a>
-
 											</div>
 											<div class="card-footer text-center p-3">
 												<a href="../logout" class="dropdown-item ai-icon btn btn-primary light">
-													<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
 													<span class="ms-2 text-primary">Logout </span>
 												</a>
 	
@@ -350,7 +378,7 @@
 				</nav>
 			</div>
 		</div>
-        <div class="dlabnav">
+        <div class="dlabnav content_hide">
 			<div class="dlabnav-scroll">	
 				<ul class="metismenu" id="menu">
 					<li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">

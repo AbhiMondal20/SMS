@@ -57,7 +57,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         <!--column-->
                         <div class="col-xl-12">
 							<div class="card" id="accordion-three">
-							   
 									<!-- /tab-content -->	
 									<div class="tab-content" id="myTabContent-2">
 										<div class="tab-pane fade show active" id="withoutSpace" role="tabpanel" aria-labelledby="home-tab-2">
@@ -65,7 +64,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
 												<div class="table-responsive">
 													<table id="example3" class="display table" style="min-width: 845px">
                                                         <thead>
-                                                            
                                                             <tr>
                                                                 <th>#</th>
                                                                 <th>PFP.</th>
@@ -80,32 +78,43 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                                             </tr>
                                                         </thead>
 														<tbody>
-                                                        <?php
-                                        $sql = "SELECT student.id AS id, student.stu_id AS stu_id, student.batch_id AS batch_id, student.name AS name, student.mobile AS mobile, student.img AS img, student.status AS status, student.f_name AS f_name, student.m_name AS m_name, batches.batches_name AS batches_name FROM student INNER JOIN batches ON student.batch_id = batches.id ";
-                                        $stmt = $conn->prepare($sql);
-                                        $stmt->execute();
-                                        $result = $stmt->get_result();
-                                        $sno = 0;
-                                        while ($row = $result->fetch_assoc()) {
-                                                $id = $row['id'];
-                                                $stu_id = $row['stu_id'];
-                                                $batch = $row['batch_id'];
-                                                $batches_name = $row['batches_name'];
-                                                $name = $row['name'];
-                                                $mobile = $row['mobile'];
-                                                $status = $row['status'];
-                                                $f_name = $row['f_name'];
-                                                $m_name = $row['m_name'];
-                                                $img = $row['img'];
-                                                $sno += 1;
-                                            ?>
-
+                                                <?php
+                                                    $sql = "SELECT student.id AS id, student.stu_id AS stu_id, student.batch_id AS batch_id, student.name AS name, student.gender AS gender, student.mobile AS mobile, student.img AS img, student.status AS status, student.f_name AS f_name, student.m_name AS m_name, batches.batches_name AS batches_name FROM student INNER JOIN batches ON student.batch_id = batches.id ";
+                                                    $stmt = $conn->prepare($sql);
+                                                    $stmt->execute();
+                                                    $result = $stmt->get_result();
+                                                    $sno = 0;
+                                                    while ($row = $result->fetch_assoc()) {
+                                                            $id = $row['id'];
+                                                            $stu_id = $row['stu_id'];
+                                                            $batch = $row['batch_id'];
+                                                            $batches_name = $row['batches_name'];
+                                                            $name = $row['name'];
+                                                            $mobile = $row['mobile'];
+                                                            $status = $row['status'];
+                                                            $f_name = $row['f_name'];
+                                                            $m_name = $row['m_name'];
+                                                            $img = $row['img'];
+                                                            $gender = $row['gender'];
+                                                            $sno += 1;
+                                                ?>
                                                 <tr>
                                                     <td>
                                                         <?php echo $id; ?>
                                                     </td>
-                                                
-                                                    <td><img class="rounded-circle" width="35" src="<?php echo $img; ?>" alt=""></td>
+                                                    <td>
+                                                        <?php
+                                                            if (!empty($img) && file_exists($img)) {
+                                                                echo '<img class="rounded-circle" width="35" src="' . $img . '" alt="">';
+                                                            } else {
+                                                                if($gender == "Female"){
+                                                                    echo '<img class="rounded-circle" width="35" src="images/f_user.png" alt="Female Student">';
+                                                                }else{
+                                                                    echo '<img class="rounded-circle" width="35" src="images/user.webp" alt="Male Student">';
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </td>
                                                     <td><?php echo $stu_id; ?></td>
                                                     <td><?php echo $name; ?></td>
                                                     <td><?php echo $batches_name; ?></td>
@@ -173,14 +182,11 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     <?php
                                     $sql = 'SELECT * FROM student ORDER BY id DESC LIMIT 1';
                                     $res = mysqli_query($conn, $sql);
-
                                     if (!$res) {
                                         echo "Error fetching student ID: " . mysqli_error($conn);
-                                        // Handle the error appropriately, perhaps redirect or show a user-friendly message.
                                     } else {
                                         $row = mysqli_fetch_assoc($res);
                                         $last_id = $row['stu_id'];
-
                                         if ($last_id == '') {
                                             $stu_id = "ATT001";
                                         } else {
@@ -247,7 +253,7 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                             </div>
                             <div class="col-xl-6">
                                 <div class="mb-3">
-                                    <label for="exampleFormControlInput2" class="form-label mb-2">Mobile</label>
+                                    <label for="exampleFormControlInput2" class="form-label mb-2">Mobile ( USE FOR LOGIN )</label>
                                     <input type="tel" class="form-control" required name="mobile" placeholder="Mobile"
                                         maxlength="10">
                                 </div>
@@ -469,13 +475,19 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                 $stmtInsert->bind_param("s", $stu_id);
                 if ($stmtInsert->execute()) {
                     if ($stmtInsert->execute()) {
-                    echo '<script>
-                                swal("Success!", "", "success");
-                                setTimeout(function(){
-                                    window.location.href = "counter-collection?stu_id='.$stu_id.'&date='.date('Y-m-d').'&search=Search"
-                                }, 1000);
-                            </script>';
-                    exit;
+
+                        $sqlInsert = "INSERT INTO `collection`(`stu_id`, `batch_id`) VALUES (? , ?)";
+                        $stmtInsert = $conn->prepare($sqlInsert);
+                        $stmtInsert->bind_param("ss", $stu_id , $batch_id);
+                        if ($stmtInsert->execute()) {
+                            echo '<script>
+                                        swal("Success!", "", "success");
+                                        setTimeout(function(){
+                                            window.location.href = window.location.href;
+                                        }, 1000);
+                                    </script>';
+                            exit;
+                        }
                     }
                 }
             } else {

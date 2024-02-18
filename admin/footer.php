@@ -1,12 +1,22 @@
-<div class="footer footer-outer">
+<div class="footer footer-outer content_hide">
 			<div class="copyright">
 				<p>Copyright © Powered by <a href="https://abhitechbot.in/" target="_blank">Abhitechbot</a> <?php echo date('Y'); ?></p>
 			</div>
 		</div>
-
 	</div>
 
-	
+	<style>
+    @media print {
+        .content_hide {
+            display: none;
+        }
+    }
+</style>
+<script>
+	function printPage() {
+		window.print();
+	}
+</script>
 
     <!--**********************************
         Scripts

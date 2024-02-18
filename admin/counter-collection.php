@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+if(isset($_SESSION['login']) && $_SESSION['login'] == true) {
     // $user_email = $_SESSION['user_email'];
 }
 else{
@@ -9,24 +9,27 @@ else{
 include('header.php');
 ?>
 <?php
-
-if (isset($_GET['id']) && $_GET['id'] === '1') {
-    $id = $_GET['id'];
-    $sql2 = "UPDATE `monthly_fees` SET `pay_status`= 1 WHERE id = ?";
-    $stmt = $conn->prepare($sql2);
-    $stmt->bind_param("ss", $id);
-    if ($stmt->execute()) {
-        echo "<script>
-                swal('Success!', '', 'success');
-                setTimeout(function(){
-                    window.location.href = window.location.href;
-                }, 2000);
-        </script>";
-        exit;
-    } else {
-        echo "Error: " . $conn->error;
+    if (isset($_GET['id']) && $_GET['id'] === '1') {
+        $id = $_GET['id'];
+        $sql2 = "UPDATE `monthly_fees` SET `pay_status`= 1 WHERE id = ?";
+        $stmt = $conn->prepare($sql2);
+        $stmt->bind_param("ss", $id);
+        if ($stmt->execute()) {
+            echo "<script>
+                    swal('Success!', '', 'success');
+                    setTimeout(function(){
+                        window.location.href = window.location.href;
+                    }, 2000);
+            </script>";
+            exit;
+        } else {
+            echo "Error: " . $conn->error;
+        }
     }
-}
+    $stu_id = "";
+    if(isset($_GET['stu_id'])){
+        $stu_id = $_GET['stu_id'];
+    }
 ?>
 <div class="content-body">
     <!-- row -->
@@ -39,17 +42,14 @@ if (isset($_GET['id']) && $_GET['id'] === '1') {
                         <div class="basic-form">
                             <form method="GET" action="">
                                 <div class="row">
-                                    <div class="col-sm-4">
-                                        <input type="text" class="form-control" name="stu_id"
-                                            placeholder="Enter Student Id">
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="stu_id" placeholder="Enter Student Id" required value="<?php echo $stu_id; ?>">
                                     </div>
-                                    <div class="col-sm-4 mt-2 mt-sm-0">
-                                        <input type="date" class="form-control" name="date"
-                                            value="<?php echo date('Y-m-d') ?>">
+                                    <div class="col-sm-3 mt-2 mt-sm-0">
+                                        <input type="date" class="form-control" name="date" value="<?php echo date('Y-m-d') ?>">
                                     </div>
-                                    <div class="col-sm-4 mt-2 mt-sm-0">
-                                        <input type="submit" class="btn btn-primary" placeholder="" value="Search"
-                                            name="search">
+                                    <div class="col-sm-3 mt-2 mt-sm-0">
+                                        <input type="submit" class="btn btn-primary" placeholder="" value="Search" name="search">
                                     </div>
                                 </div>
                             </form>
@@ -60,20 +60,54 @@ if (isset($_GET['id']) && $_GET['id'] === '1') {
             <?php
             if (isset($_GET['search'])) {
                 $stu_id = $_GET['stu_id'];
-                // $batch_id = "";
+                $batch_id = "";
+                $fees_id = [];
                 $stu_id = mysqli_real_escape_string($conn, $_GET['stu_id']);
-                $date = mysqli_real_escape_string($conn, $_GET['date']);
-                $sql = "SELECT * FROM `student` WHERE stu_id = '$stu_id'";
+                $payment_date = mysqli_real_escape_string($conn, $_GET['date']);
+                // $sql = "SELECT * FROM `student` INNER JOIN collection ON collection.stu_id = student.stu_id WHERE student.stu_id = '$stu_id'";
+                $sql = "SELECT student.stu_id AS stu_id, collection.month AS month, collection.year AS year, collection.batch_id AS batch_id, collection.fees_id AS fees_id FROM `student` LEFT JOIN collection ON collection.stu_id = student.stu_id WHERE student.stu_id = '$stu_id'";
                 $res_student = mysqli_query($conn, $sql);
                 if ($res_student) {
                     while ($row = mysqli_fetch_assoc($res_student)) {
                         $batch_id = $row['batch_id'];
+                        $month = $row['month'];
+                        $year = $row['year'];
+                        $fees_id[] = $row['fees_id'];
                     }
-                    $sql = "SELECT monthly_fees.id AS id, year, month FROM `monthly_fees` WHERE pay_status = '0' AND batch_id = '$batch_id'";
+
+                    if (!empty($fees_id)) {
+                        if (is_array($fees_id)) {
+                            $fees_id_str = implode('', $fees_id); 
+                        } else {
+                            $fees_id_str = $fees_id;
+                        }
+                    } else {
+                        // echo "Error: fees_id is empty";
+                        echo '<div class="alert alert-danger alert-dismissible fade show">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="me-2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        <strong>Error!</strong> Student Id Not Found.
+                        <button type="button" class="btn-close btn-danger" data-bs-dismiss="alert" aria-label="btn-close">
+                        <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        </div>';
+                        // echo '<script>
+                        //     setTimeout(function(){
+                        //         window.location.href =  "counter-collection";
+                        //     }, 3000);
+                        // </script>';
+                        exit;
+                    }
+
+                    if (!empty($fees_id_str)) {
+                        $sql = "SELECT monthly_fees.id AS fees_id, year, batch_id, month FROM `monthly_fees` WHERE batch_id = '$batch_id' AND id NOT IN ($fees_id_str)";
+                    } else {
+                        $sql = "SELECT monthly_fees.id AS fees_id, year, month FROM `monthly_fees` WHERE batch_id = '$batch_id'";
+                    }
+                        
                     $res_monthly_fees = mysqli_query($conn, $sql);
                     if ($res_monthly_fees) {
                         while ($row_monthly_fees = mysqli_fetch_assoc($res_monthly_fees)) {
-                            $monthly_fees_id = $row_monthly_fees['id'];
+                            $monthly_fees_id = $row_monthly_fees['fees_id'];
                             $month = $row_monthly_fees['month'];
                             $year = $row_monthly_fees['year'];
                             echo '
@@ -134,14 +168,14 @@ if (isset($_GET['id']) && $_GET['id'] === '1') {
             ?>
         <form method="POST">
             <div class="row">
-                <div class="mb-3 col-md-6">
+                <div class="mb-3 col-md-6" >
                     <input type="text" class="form-control" placeholder="Transaction No" name="trans_no" required>
                 </div>
                 <div class="mb-3 col-md-6" style="display:none;">
                     <input type="hidden" class="form-control" placeholder="Batch" name="batch_id"
                         value="<?php echo $batch_id; ?>">
                 </div>
-                <div class="mb-3 col-md-6">
+                <div class="mb-3 col-md-6" style="display:none;">
                     <input type="text" class="form-control" id="selected_ids" name="monthly_fees_id[]">
                 </div>
                 <div class="mb-3 col-md-6" style="display:none;">
@@ -149,9 +183,10 @@ if (isset($_GET['id']) && $_GET['id'] === '1') {
                         value="<?php echo $stu_id; ?>">
                 </div>
                 <div class="mb-3 col-md-6" style="display:none;">
-                    <input type="hidden" class="form-control" placeholder="month" name="month"
+                    <input type="text" class="form-control" id="month" placeholder="month" name="month"
                         value="<?php echo $month; ?>">
                 </div>
+
                 <div class="mb-3 col-md-6" style="display:none;">
                     <input type="hidden" class="form-control" placeholder="year" name="year"
                         value="<?php echo $year; ?>">
@@ -162,74 +197,101 @@ if (isset($_GET['id']) && $_GET['id'] === '1') {
             </div>
             <button type="submit" class="btn btn-primary" id="total" name="pay_amt">Pay ₹</button>
         </form>
-        </div>
-            
     </div>
+  </div>
 </div>
 </div>
 
 <?php
-// Assuming $conn is your database connection
-
 if (isset($_POST['pay_amt'])) {
+
     $trans_no = $_POST['trans_no'];
     $batch_id = $_POST['batch_id'];
     $stu_id = $_POST['stu_id'];
     $month = $_POST['month'];
     $year = $_POST['year'];
 
-    // Convert the comma-separated values into an array
-    // $selectedIds = explode(',', $_POST['monthly_fees_id']);
-    $selectedIds = explode(',', implode(',', $_POST['monthly_fees_id']));
+    // Debugging statement to check $_POST['monthly_fees_id']
+    // var_dump($_POST['monthly_fees_id']);
 
-    
+    if (is_array($_POST['monthly_fees_id'])) {
+        $selectedIds = $_POST['monthly_fees_id'];
+    } else {
+        // echo "Error: monthly_fees_id is not an array";
+        exit; // Exit the script as there's an error
+    }
     $total_pay_amt = $_POST['additionalValue'];
     $added_by = 1;
     $pay_status = 1;
+    // Begin transaction
+    $conn->begin_transaction();
+    try {
+    
+    // Fetch existing fees_id for the given stu_id
+    $sqlSelect = "SELECT `fees_id` , `trans_no` FROM `collection` WHERE `stu_id` = ?";
+    $stmtSelect = $conn->prepare($sqlSelect);
+    $stmtSelect->bind_param("s", $stu_id);
+    $stmtSelect->execute();
+    $stmtSelect->bind_result($existing_fees_id, $existing_trans_no);
+    $stmtSelect->fetch();
+    $stmtSelect->close();
 
-    $sqlInsert = "INSERT INTO `collection`(`stu_id`, `trans_no`, `batch_id`, `month`, `year`, `total_pay_amt`, `added_by`) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmtInsert = $conn->prepare($sqlInsert);
-    $stmtInsert->bind_param("ssissii", $stu_id, $trans_no, $batch_id, $month, $year, $total_pay_amt, $added_by);
+    // Handle the case when $existing_fees_id is NULL or empty string
+    $existing_fees_array = ($existing_fees_id !== null && $existing_fees_id !== '') ? explode(',', $existing_fees_id) : [];
+    $merged_fees_id = array_merge($existing_fees_array, $selectedIds);
+    $merged_fees_id = implode(',', array_unique($merged_fees_id));
 
-    if ($stmtInsert->execute()) {
-        foreach ($selectedIds as $monthly_fees_id) {
-            $sqlUpdate = "UPDATE `monthly_fees` SET `pay_status` = ? WHERE id = ?";
-            $stmtUpdate = $conn->prepare($sqlUpdate);
-            $stmtUpdate->bind_param("ii", $pay_status, $monthly_fees_id);
-            
-            if (!$stmtUpdate->execute()) {
-                echo '<script>
-                    swal("Error!", "Error updating data in monthly_fees table.", "error");
-                </script>';
-                exit;
-            }
-            
-            $stmtUpdate->close();
-        }
+    // Merge the existing trans_no with the new ones
+    // $merged_trans_no = array_merge(explode(',', $existing_trans_no), [$trans_no]);
+    // $merged_trans_no = implode(',', array_unique($merged_trans_no)); 
 
-        echo '<script>
-            swal("Success!", "", "success");
-            setTimeout(function(){
-                window.location.href =  window.location.href
-            }, 1000);
-        </script>';
-        exit;
-    } else {
-        echo '<script>
-            swal("Error!", "Error inserting data into collection table.", "error");
-        </script>';
+
+    // Handle the case when $existing_trans_no is NULL or empty string
+    $existing_trans_array = ($existing_trans_no !== null && $existing_trans_no !== '') ? explode(',', $existing_trans_no) : [];
+    $merged_trans_no = array_merge($existing_trans_array, [$trans_no]);
+    $merged_trans_no = implode(',', array_unique($merged_trans_no));
+
+    // Update the collection table with the merged fees_id
+    $sqlUpdate = "UPDATE `collection` SET `total_pay_amt` = `total_pay_amt` + ?, `fees_id` = ?, `trans_no` = ?, `payment_date` = ? WHERE `stu_id` = ?";
+    $stmtUpdate = $conn->prepare($sqlUpdate);
+    $stmtUpdate->bind_param("sssss", $total_pay_amt, $merged_fees_id, $merged_trans_no, $payment_date, $stu_id);
+    $stmtUpdate->execute();
+    $stmtUpdate->close();
+
+    // Update pay_status in monthly_fees table
+    $sqlUpdate = "UPDATE `monthly_fees` SET `pay_status` = ? WHERE id = ?";
+    $stmtUpdate = $conn->prepare($sqlUpdate);
+
+    foreach ($selectedIds as $monthly_fees_id) {
+        $stmtUpdate->bind_param("ii", $pay_status, $monthly_fees_id);
+        $stmtUpdate->execute();
     }
 
-    // Close the insert statement to release resources
-    $stmtInsert->close();
+    $conn->commit();
+    echo '<script>
+        swal("Success!", "", "success");
+        setTimeout(function(){
+            window.location.href =  "counter-collection";
+        }, 1000);
+    </script>';
+    exit;
+} catch (Exception $e) {
+    // Rollback transaction if an error occurred
+    $conn->rollback();
+    echo '<script>
+        swal("Error!", "Error processing transaction.", "error");
+        
+    </script>';
 }
+
+// Close the statements to release resources
+// $stmtInsert->close();
+// $stmtUpdate->close();
+}
+
 ?>
 
-
-
 <script>
-    
-    // JavaScript function to update the total when a checkbox or text box value changes
 function updateTotal() {
     var checkboxes = document.querySelectorAll('.form-check-input');
     var total = 0;
@@ -246,7 +308,6 @@ function updateTotal() {
     document.getElementById('total').innerText = total;
     document.getElementById('additionalValue').value = additionalValue;
 
-    
     var checkboxes = document.querySelectorAll('.form-check-input');
     var selectedIds = [];
 
@@ -258,11 +319,7 @@ function updateTotal() {
 
     // Update the value of the text box with the selected IDs in array format
     document.getElementById('selected_ids').value = selectedIds.join(',');
-
-
 }
-
-
 </script>
 
 <?php

@@ -17,10 +17,10 @@ function getPageTitle() {
         'student.php' => 'Manage Student',
         'edit-student.php' => 'Update Student Manage',
         'student-upload-document.php' => 'Student Document',
-        // Add more pages and their titles as needed
+        'site-info.php' => 'Website Info',
+        'counter-receipt.php' => 'Counter Receipt'
     );
 
-    // Check if the current page is in the title map
     if (array_key_exists($page, $titleMap)) {
         return $titleMap[$page];
     } else {
