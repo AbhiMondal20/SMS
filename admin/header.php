@@ -431,8 +431,8 @@
 					<ul aria-expanded="false">
 						<li><a href="fees-head-report">Fees Head Report</a></li>
 						<li><a href="Fees Paid Report">Fees Paid Report</a></li>
-						<li><a href="Student Ledger Report">Student Ledger Report</a></li>
-						<li><a href="Student Ledger Report">Cancellation History</a></li>
+						<li><a href="student-ledger-report">Student Ledger Report</a></li>
+						<li><a href="counter-cancellation-history">Cancellation History</a></li>
 						<li><a href="Meal Issued">Meal Issued</a></li>
 						<li><a href="Daily Item Stock">Daily Item Stock</a></li>
 					</ul>

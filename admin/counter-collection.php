@@ -269,11 +269,13 @@ if (isset($_POST['pay_amt'])) {
 
     $conn->commit();
     echo '<script>
-        swal("Success!", "", "success");
-        setTimeout(function(){
-            window.location.href =  "counter-collection";
-        }, 1000);
-    </script>';
+    swal("Success!", "", "success");
+    setTimeout(function(){
+        var url = "counter-receipt?stu_id='.$stu_id.'";
+        window.open(url, "_blank");
+    }, 1000);
+</script>
+';
     exit;
 } catch (Exception $e) {
     // Rollback transaction if an error occurred

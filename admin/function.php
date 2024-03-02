@@ -18,7 +18,11 @@ function getPageTitle() {
         'edit-student.php' => 'Update Student Manage',
         'student-upload-document.php' => 'Student Document',
         'site-info.php' => 'Website Info',
-        'counter-receipt.php' => 'Counter Receipt'
+        'counter-receipt.php' => 'Counter Receipt',
+        'payment-history.php' => 'Payment History',
+        'counter-cancellation-history.php' => 'Cancelleation History',
+        'student-ledger-report.php' => 'Student Ledger Report'
+        
     );
 
     if (array_key_exists($page, $titleMap)) {

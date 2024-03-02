@@ -1,29 +1,26 @@
 <?php
-
-session_start();
-if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
-    // $user_email = $_SESSION['user_email'];
-}
-else{
-    echo "<script>location.href='../login';</script>";
-}
-include('header.php');
-$sql = "SELECT * FROM `site_info`";
-	$res = mysqli_query($conn, $sql);
-	while ($row = mysqli_fetch_assoc($res)) {
-		$id = $row['id'];
-		$site_name = $row['site_name'];
-		$site_url = $row['site_url'];
-		$logo = $row['logo'];
-		$fav_icon = $row['fav_icon'];
-		$address = $row['address'];
-		$phone = $row['phone'];
-		$phone2 = $row['phone2'];
-		$email = $row['email'];
-	}
+    session_start();
+    if(isset($_SESSION['login']) && $_SESSION['login'] == true) {   
+        // $user_email = $_SESSION['user_email'];
+    }
+    else{
+        echo "<script>location.href='../login';</script>";
+    }
+    include('header.php');
+    $sql = "SELECT * FROM `site_info`";
+    $res = mysqli_query($conn, $sql);
+    while ($row = mysqli_fetch_assoc($res)) {
+        $id = $row['id'];
+        $site_name = $row['site_name'];
+        $site_url = $row['site_url'];
+        $logo = $row['logo'];
+        $fav_icon = $row['fav_icon'];
+        $address = $row['address'];
+        $phone = $row['phone'];
+        $phone2 = $row['phone2'];
+        $email = $row['email'];
+ }
 ?>
-
-
 <div class="content-body">
     <!-- row -->
     <div class="container-fluid">
@@ -70,10 +67,10 @@ $sql = "SELECT * FROM `site_info`";
                                             </address>
                                         </div>
                                     <hr>
-                                    </div>                        
+                                    </div>    
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <div class="table-responsive">
+                                            <div class="table-responsive" style="box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.5);">
                                                 <table id="mainTable" class="table table-striped" style="cursor: pointer;">
                                                     <thead>
                                                         <tr>
@@ -87,8 +84,8 @@ $sql = "SELECT * FROM `site_info`";
                                                     <tbody>
                                                         <?php
                                                             $stu_id = $_GET['stu_id'];
-                                                            $trans_no = array();
-                                                            $fees_id = array();                                             
+                                                            $trans_no = [];
+                                                            $fees_id = [];                                             
                                                             $sql = "SELECT student.name AS name, student.stu_id AS stu_id, collection.trans_no AS trans_no, batches.batches_name AS batches_name, collection.batch_id AS batch_id, collection.fees_id AS coll_fees_id, session.session AS session  FROM `student`
                                                             INNER JOIN `collection`ON student.stu_id = collection.stu_id
                                                             INNER JOIN `batches` ON student.batch_id = batches.id 
@@ -123,7 +120,6 @@ $sql = "SELECT * FROM `site_info`";
                                     <?php
                                         if (is_array($coll_fees_id)) {
                                             $fees_id_str = implode(",", array_filter($coll_fees_id, 'strlen'));
-
                                             if (!empty($fees_id_str)) {
                                                 $sql = "SELECT monthly_fees.id AS fees_id, year, month FROM `monthly_fees` WHERE id IN ($fees_id_str)";
                                             } else {
@@ -138,24 +134,22 @@ $sql = "SELECT * FROM `site_info`";
                                         if ($res_monthly_fees) {
                                             while ($row_monthly_fees = mysqli_fetch_assoc($res_monthly_fees)) {
                                                 $monthly_fees_id = $row_monthly_fees['fees_id'];
-                                                $month = $row_monthly_fees['month'];
-                                                $year = $row_monthly_fees['year'];
+                                                $fees_month = $row_monthly_fees['month'];
+                                                $fees_year = $row_monthly_fees['year'];
                                                 echo '
-                                                <div class="col-xl-4 col-lg-4">
+                                                <div class="col-xl-3 col-lg-3 m-5" style="box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.5)">
                                                     <div class="clearfix">
                                                         <div class="card card-bx profile-card author-profile m-b30">
                                                             <div class="card-body ">
                                                                 <div class="card-header border-0 ">
-                                                                    <h2 class="card-title">' . $month . '- ' . $year .'</h2>
+                                                                    <h2 class="card-title">' . $fees_month . '- ' . $fees_year .'</h2>
                                                                 </div>
                                                                 <div class="info-list">
                                                                     <ul>';
                                                 $total_price = 0;
                                                 $encountered_titles = array();
-                                                $sql = "SELECT monthly_fees_menu.id AS id, fees_head_id, title, amount, month , monthly_fees_menu.status AS status, pay_status 
-                                                FROM `monthly_fees_menu` 
-                                                INNER JOIN fees_head ON fees_head.id = monthly_fees_menu.fees_head_id 
-                                                WHERE month = '$month' AND pay_status = '0' GROUP BY fees_head_id";
+                                                $sql = "SELECT monthly_fees_menu.id AS id, fees_head_id, title, amount, monthly_fees_menu.status AS status, pay_status 
+                                                FROM `monthly_fees_menu` INNER JOIN fees_head ON fees_head.id = monthly_fees_menu.fees_head_id WHERE month = '$fees_month' AND monthly_fees_menu.batch_id = '$batch_id' AND pay_status = '0' GROUP BY fees_head_id";
                                                 $res_fees_head = mysqli_query($conn, $sql);
                                                 while ($row_fees_head = mysqli_fetch_assoc($res_fees_head)) {
                                                     $title = $row_fees_head['title'];
@@ -188,15 +182,16 @@ $sql = "SELECT * FROM `site_info`";
                                                     </div>
                                                 </div>
                                             </div>';
-                                            } 
+                                            }
                                         }
+                                        $fees11 = $total_price + $total_price;
                                     ?>
                                         
                                     </div>                        
                                     <div class="row" style="padding-left:10px">
                                         <div class="col-md-12 text-right">
-                                            <p class="text-right mb-0"><b>Total Fees Paid : </b> ₹2930.00</p>
-                                        </div>                                    
+                                            <!-- <p class="text-right mb-0"><b>Total Fees Paid : </b> ₹</p> -->
+                                        </div>
                                         <div class="col-md-12 text-right hidden-print mb-3">
                                             <hr>
                                             <center>
