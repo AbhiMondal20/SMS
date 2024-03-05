@@ -208,7 +208,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
             </div>
             <div class="modal-body">
                 <form action="" method="post">
-
                     <div class="row">
                         <div class="col-xl-6">
                             <div class="mb-3">
@@ -224,7 +223,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     placeholder="Email" required name="email">
                             </div>
                         </div>
-
                         <div class="col-xl-6">
                             <div class="mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">Password</label>
@@ -246,7 +244,6 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                                     placeholder="Mobile" required name="mobile">
                             </div>
                         </div>
-
                         <div class="col-lg-12">
                             <div class="dropdown bootstrap-select form-select wide form-control dropup mb-3">
                                 <label for="exampleFormControlInput2" class="form-label mb-2">Role</label>
@@ -260,8 +257,8 @@ if (isset($_GET['type']) && $_GET['type'] === 'delete' && isset($_GET['id']) && 
                         </div>
                     </div>
                     <center>
-                        <button type="submit" class="btn btn-primary" name="save"><i
-                                class="fa-regular fa-floppy-disk"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" name="save">
+                            <i class="fa-regular fa-floppy-disk"></i> Save</button>
                     </center>
                 </form>
             </div>
