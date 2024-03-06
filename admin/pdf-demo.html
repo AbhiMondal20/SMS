@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>invoice.html</title>
+<style>
+    @page {
+        size: A4;
+        margin: 30mm 10mm 80mm 25mm;
+
+        @top-center {
+            content: 'Page ' counter(page) ' of ' counter(pages);
+            vertical-align: top;
+            padding-top: 10mm;
+        }
+
+        @area header {
+            content: element(header);
+            top: 10mm;
+            right: 10mm;
+            left: 20mm;
+        }
+        @area footer {
+            content: element(footer);
+            padding: 5mm 10mm;
+            bottom: 0mm;
+            height: 50mm;
+            right: 0mm;
+            left: 0mm;
+            background: #F0F0F0;
+            border-top: 1mm solid red;
+        }
+
+        @area perforate-mark {
+            left: 0mm;
+            top: 148.5mm;
+            width: 3mm;
+            border-bottom: 0.2mm solid #ccc;
+        }
+        @area fold-mark-left-top {
+            left: 0mm;
+            top: 90mm;
+            width: 6mm;
+            border-bottom: 0.2mm dashed #ccc;
+        }
+        @area fold-mark-left-bottom {
+            left: 0mm;
+            top: 195mm;
+            width: 6mm;
+            border-bottom: 0.2mm dashed #ccc;
+        }
+        @area fold-mark-right-top {
+            right: 0mm;
+            top: 90mm;
+            width: 6mm;
+            border-bottom: 0.2mm dashed #ccc;
+        }
+        @area fold-mark-right-bottom {
+            right: 0mm;
+            top: 195mm;
+            width: 6mm;
+            border-bottom: 0.2mm dashed #ccc;
+        }
+    }
+
+    html {
+        font-size: 9pt;
+    }
+
+    h1 {
+        font-size: 14pt;
+        clear: both;
+        margin: 0;
+    }
+
+    .comment {
+        border-left: 1mm solid red;
+        background: #F0F0F0;
+        font-size: 0.9em;
+        padding: 1mm 2mm;
+        margin: 2mm 0;
+    }
+
+
+    .info {
+        float: right;
+    }
+
+    h3 {
+        text-align: right;
+        margin: 1em 0 0.5em 0;
+        clear: both;
+    }
+    table.information {
+        clear: right;
+        border: none 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    table.information td, table.information th {
+        border: none 0;
+        padding: 0;
+
+    }
+    table.information th {
+        font-weight: bold;
+        padding-right: 5mm;
+        text-align: left;
+    }
+    table.information td {
+        text-align: right;
+    }
+    table.information th::after {
+        content: ':';
+    }
+
+
+    header#logo {
+        position: running(header);
+        text-align: right;
+    }
+
+    header#logo img {
+        width: 50mm;
+    }
+
+    footer#details {
+        position: running(footer);
+        font-size: 9pt;
+        line-height: 140%;
+        color: #666;
+    }
+
+    footer#details .col1 {
+        float:left;
+        width: 25%;
+        margin-top: 5mm;
+    }
+    footer#details .col2 {
+        float:left;
+        width: 35%;
+        margin-top: 5mm;
+    }
+    footer#details .col3 {
+        float:right;
+        width: 30%;
+        margin-top: 5mm;
+    }
+
+    header#letter {
+        min-height: 60mm;
+    }
+    header#letter .left {
+        /* Absolute position to fit the letter window */
+        position: absolute;
+        box-sizing: border-box;
+        left: 0;
+        top: 5mm;
+        height: 40mm;
+        width: 90mm;
+        font-size: 10pt;
+        padding: 0;
+    }
+
+    address.sender {
+        font-size: 0.75em;
+        color: #999;
+        margin-bottom: 1em;
+    }
+
+
+
+    header#letter .right {
+        float: right;
+        width: 40%;
+    }
+
+
+    .order-details {
+        display: flow-root;
+    }
+
+    section.payment {
+        float:left;
+        width: 40%;
+        margin-top: 5mm;
+    }
+    section.shipping {
+        float:right;
+        width: 40%;
+        margin-top: 5mm;
+    }
+
+    table.items {
+        clear: both;
+        width: 100%;
+        border: none;
+        font-size: 9pt;
+        margin: 5mm 0;
+    }
+
+    table.items th {
+        border: none 0;
+        border-bottom: 0.5mm solid black;
+        font-weight: bold;
+        text-align: left;
+        padding-bottom: 2mm;
+    }
+    table.items td {
+        border: none 0;
+        padding: 2mm 0;
+    }
+
+    table.items tr:nth-child(even) td {
+        background: #f3f3f3;
+    }
+
+    table.items .qty {
+        text-align: center;
+    }
+    table.items .price {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    table.totals {
+        margin-top: 5mm;
+        float: right;
+        border: none;
+        border-collapse: separate;
+        padding: 0;
+        border-spacing: 0;
+
+    }
+    table.totals td, table.totals th {
+        border: none;
+        border-width: 0;
+        padding: 1mm 0;
+        line-height: 100%;
+    }
+    table.totals th {
+        font-weight: bold;
+        padding: 1mm 5mm;
+        text-align: left;
+    }
+
+    table.totals .grand td, table.totals .grand th {
+        border-bottom: 1mm double black;
+        font-size: 1.1em;
+        padding-top: 2mm;
+    }
+    table.totals td {
+        text-align: right;
+    }
+
+
+</style>
+</head>
+<body>
+
+
+
+<header id="logo">
+<img class="logo" src="https://typeset.sh/images/typeset.sh-logo.svg" style="float:right" />
+</header>
+
+
+<header id="letter">
+
+<div class="left">
+    <address class="sender">typeset.sh • Hansaallee 78 • 60323 Frankfurt am Main • Germany</address>
+    <address class="recipient">
+        <strong>Sample Business</strong><br />
+        John Doe<br />
+        3 Edgar Buildings<br />
+        George Street<br />
+        England
+    </address>
+</div>
+<div class="right">
+    <div class="info">
+        <h3>Invoice</h3>
+        <table class="information">
+            <tbody>
+            <tr>
+                <th>Customer #</th>
+                <td>55-4884844</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>January 26 2019</td>
+            </tr>
+            <tr>
+                <th>Due date</th>
+                <td>February 27 2019</td>
+            </tr>
+            <tr>
+                <th>USt.-IdNr.</th>
+                <td>DE 317 949 066</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="info">
+        <h3>Buisiness Serviceline</h3>
+        <table class="information">
+            <tbody>
+            <tr>
+                <th>Tel.:</th>
+                <td>+49 30 3432622-113</td>
+            </tr>
+            <tr>
+                <th>Fax.:</th>
+                <td>+49 30 3432622-114</td>
+            </tr>
+            <tr>
+                <th>E-Mail:</th>
+                <td>contact@typeset.sh</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</header>
+
+<footer id="details">
+<img src="https://typeset.sh/images/typeset.sh-logo.svg" style="height: 1.5em; display: block;" />
+
+<div class="col1">
+    Hansaallee 78<br />
+    60323 Frankfurt am Main<br />
+    Germany
+</div>
+
+<div class="col2">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a justo ultrices odio aliquam aliquet.
+    Donec vel pulvinar lorem. Mauris auctor vitae lorem sit amet blandit. Suspendisse tempor convallis
+    justo ac vehicula.
+</div>
+<div class="col3">
+    Payment and Banking details<br />
+    Sparkasse Frankfurt am Main<br />
+    DE27 1007 7777 0209 2997 00<br />
+    Commerzbank Frankfurt am Main<br />
+    DE11 5205 1373 5120 7101 31
+</div>
+
+</footer>
+
+
+<h1>Invoice #100575695</h1>
+<p>Date: January 26 2019</p>
+<p class="comment">Order comment: Please make sure all items are wrapped separately as agreed on the phone.</p>
+
+
+<div class="order-details">
+<section class="payment">
+    <strong>Payment method</strong><br />
+    Paypal
+</section>
+
+<section class="shipping">
+    <strong>Shipping method</strong><br />
+    DHL - Express
+</section>
+</div>
+<div class="order-details">
+<table class="items">
+    <thead>
+    <tr>
+        <th class="sku">SKU</th>
+        <th>Name</th>
+        <th class="qty">Quantity</th>
+        <th class="price">Price</th>
+        <th class="price">Tax</th>
+        <th class="price">Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">2</td>
+        <td class="price">120,00 &euro;</td>
+        <td class="price">19,16 &euro;</td>
+        <td class="price">240,00 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">8</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">7</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">12</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">2.5 sqrm</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest<br />Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+        <td class="qty">3</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">5 kg</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+    <tr>
+        <td class="sku">45-572-547</td>
+        <td>Black chair with red arm rest</td>
+        <td class="qty">1</td>
+        <td class="price">85,90 &euro;</td>
+        <td class="price">15,59 &euro;</td>
+        <td class="price">85,90 &euro;</td>
+    </tr>
+
+
+    </tbody>
+</table>
+
+<table class="totals">
+    <tr>
+        <th>Subtotal</th>
+        <td>290,90 &euro;</td>
+    </tr>
+    <tr>
+        <th>Tax</th>
+        <td>34,23 &euro;</td>
+    </tr>
+    <tr>
+        <th>Discount</th>
+        <td>10,00 &euro;</td>
+    </tr>
+    <tr class="grand">
+        <th>Grand total</th>
+        <td>340,00 &euro;</td>
+    </tr>
+</table>
+
+</div>
+<div style="clear: both; margin-top: 10mm; text-align: justify; text-align-last: left">
+
+<p>Dear Jon Doe, thank you for you order, if you have any questions, please don't hesitate to ask.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a justo ultrices odio aliquam aliquet.
+    Donec vel pulvinar lorem. Mauris auctor vitae lorem sit amet blandit. Suspendisse tempor convallis
+    justo ac vehicula. Integer ligula quam, facilisis id risus finibus, sodales commodo diam.
+    Nulla ante mi, porta vel odio et, condimentum accumsan arcu. Suspendisse mattis diam vitae lacus
+    facilisis, nec commodo lectus scelerisque. Quisque vel accumsan elit. Nam sit amet magna sit amet
+    lectus pretium mollis in ut lacus. </p>
+
+</div>
+
+
+
+
+</body>
+</html>
